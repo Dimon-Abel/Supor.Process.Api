@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,7 +14,9 @@ namespace Supor.Process.Api.Filters
     {
         public override void OnException(ExceptionContext filterContext)
         {
+            var logger = LogManager.GetCurrentClassLogger();
             // 写异常日志
+            logger.Error(filterContext.Exception.StackTrace);
 
             base.OnException(filterContext);
         }

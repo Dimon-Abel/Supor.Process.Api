@@ -1,4 +1,5 @@
-﻿using Supor.Process.Entity.InputDto;
+﻿using NLog;
+using Supor.Process.Entity.InputDto;
 using Supor.Process.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,17 @@ namespace Supor.Process.Services.Services
     /// </summary>
     public partial class TaskService : ITaskService
     {
+        private readonly ILogger _logger;
+
+        public TaskService(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<string> Send(TaskDto taskDto)
         {
-            return "send task";
+            _logger.Debug($"TaskService.send");
+            return await Task.FromResult("send task");
         }
     }
 }

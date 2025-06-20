@@ -486,10 +486,11 @@
             任务管理
             </summary>
         </member>
-        <member name="M:Supor.Process.Api.Controllers.Api.TaskController.#ctor(Supor.Process.Domain.Interfaces.ITaskDomain)">
+        <member name="M:Supor.Process.Api.Controllers.Api.TaskController.#ctor(NLog.ILogger,Supor.Process.Domain.Interfaces.ITaskDomain)">
             <summary>
             
             </summary>
+            <param name="logger"></param>
             <param name="taskDomain"></param>
         </member>
         <member name="M:Supor.Process.Api.Controllers.Api.TaskController.Send">
@@ -497,6 +498,18 @@
             提交任务
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Supor.Process.Api.Controllers.Api.TaskController.Test(System.String)">
+            <summary>
+            测试异常写入
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Supor.Process.Api.DependencyExtenstions">
+            <summary>
+            注入 服务
+            </summary>
         </member>
         <member name="M:Supor.Process.Api.DependencyExtenstions.AutofacRegister">
             <summary>

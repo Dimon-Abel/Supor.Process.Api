@@ -1,12 +1,15 @@
 ﻿using Autofac;
 using Autofac.Integration.WebApi;
+using NLog;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
-using System.Web.Mvc;
 
 namespace Supor.Process.Api
 {
+    /// <summary>
+    /// 注入 服务
+    /// </summary>
     public static class DependencyExtenstions
     {
         /// <summary>
@@ -20,6 +23,8 @@ namespace Supor.Process.Api
             builder.RegisterDomain();
             builder.RegisterService();
 
+            builder.RegisterLog();
+
             GlobalConfiguration.Configuration.DependencyResolver =
                 new AutofacWebApiDependencyResolver(builder.Build());
         }
@@ -28,7 +33,7 @@ namespace Supor.Process.Api
         /// 注入 Domain
         /// </summary>
         /// <param name="builder"></param>
-        public static void RegisterDomain(this ContainerBuilder builder)
+        private static void RegisterDomain(this ContainerBuilder builder)
         {
             var assembly = Assembly.Load("Supor.Process.Domain");
             builder.RegisterAssemblyTypes(assembly)
@@ -41,7 +46,7 @@ namespace Supor.Process.Api
         /// 注入 Service
         /// </summary>
         /// <param name="builder"></param>
-        public static void RegisterService(this ContainerBuilder builder)
+        private static void RegisterService(this ContainerBuilder builder)
         {
             var assembly = Assembly.Load("Supor.Process.Services");
             builder.RegisterAssemblyTypes(assembly)
@@ -50,6 +55,13 @@ namespace Supor.Process.Api
                    .InstancePerLifetimeScope();
         }
 
+        private static void RegisterLog(this ContainerBuilder builder)
+        {
+            LogManager.Setup().LoadConfigurationFromFile("nlog.config");
 
+            builder.Register(x => LogManager.GetCurrentClassLogger())
+            .As<ILogger>()
+            .SingleInstance();
+        }
     }
 }

@@ -1,0 +1,10 @@
+D:\Supor.Process.Api\Supor.Process.Common\bin\Debug\NLog.config
+D:\Supor.Process.Api\Supor.Process.Common\bin\Debug\Supor.Process.Common.dll
+D:\Supor.Process.Api\Supor.Process.Common\bin\Debug\Supor.Process.Common.pdb
+D:\Supor.Process.Api\Supor.Process.Common\bin\Debug\NLog.dll
+D:\Supor.Process.Api\Supor.Process.Common\bin\Debug\NLog.xml
+D:\Supor.Process.Api\Supor.Process.Common\obj\Debug\Supor.Process.Common.csproj.CoreCompileInputs.cache
+D:\Supor.Process.Api\Supor.Process.Common\obj\Debug\Supor.Process.Common.csproj.CopyComplete
+D:\Supor.Process.Api\Supor.Process.Common\obj\Debug\Supor.Process.Common.dll
+D:\Supor.Process.Api\Supor.Process.Common\obj\Debug\Supor.Process.Common.pdb
+D:\Supor.Process.Api\Supor.Process.Common\obj\Debug\Supor.Process.Common.csprojAssemblyReference.cache

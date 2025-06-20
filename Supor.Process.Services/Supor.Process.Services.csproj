@@ -31,8 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\Supor.Process.Api\packages\NLog.5.5.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,10 +51,17 @@
     <Compile Include="Services\TaskService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Supor.Process.Common\Supor.Process.Common.csproj">
+      <Project>{6e0b74b0-64b4-45bf-b630-ccd52f4591fa}</Project>
+      <Name>Supor.Process.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Supor.Process.Entity\Supor.Process.Entity.csproj">
       <Project>{cd452ed1-61da-497f-99e9-b1d0ee532b9e}</Project>
       <Name>Supor.Process.Entity</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
