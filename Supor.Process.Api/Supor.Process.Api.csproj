@@ -53,6 +53,9 @@
     <Reference Include="Autofac.Integration.WebApi, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>packages\Autofac.WebApi2.4.0.0\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>packages\NLog.5.5.0\lib\net45\NLog.dll</HintPath>
@@ -275,9 +278,17 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Supor.Process.Common\Supor.Process.Common.csproj">
+      <Project>{6e0b74b0-64b4-45bf-b630-ccd52f4591fa}</Project>
+      <Name>Supor.Process.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Supor.Process.Domain\Supor.Process.Domain.csproj">
       <Project>{991c1b5f-d381-4f18-ad72-6e8e694ea1d1}</Project>
       <Name>Supor.Process.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Supor.Process.Entity\Supor.Process.Entity.csproj">
+      <Project>{cd452ed1-61da-497f-99e9-b1d0ee532b9e}</Project>
+      <Name>Supor.Process.Entity</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

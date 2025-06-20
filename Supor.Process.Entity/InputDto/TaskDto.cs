@@ -5,6 +5,8 @@
     /// </summary>
     public class TaskDto
     {
+        public int Id { get; set; }
+
         public string TaskName { get; set; }
     }
 }

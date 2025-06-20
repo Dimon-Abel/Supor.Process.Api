@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Integration.WebApi;
+using AutoMapper;
 using NLog;
+using Supor.Process.Common;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
@@ -25,8 +27,13 @@ namespace Supor.Process.Api
 
             builder.RegisterLog();
 
+            builder.RegisterMapper();
+
+            var container = builder.Build();
+
+            ServiceLocator.SetContainer(container);
             GlobalConfiguration.Configuration.DependencyResolver =
-                new AutofacWebApiDependencyResolver(builder.Build());
+                new AutofacWebApiDependencyResolver(container);
         }
 
         /// <summary>
@@ -55,6 +62,28 @@ namespace Supor.Process.Api
                    .InstancePerLifetimeScope();
         }
 
+        /// <summary>
+        /// 注入 AutoMapper
+        /// </summary>
+        /// <param name="builder"></param>
+        private static void RegisterMapper(this ContainerBuilder builder)
+        {
+            var assembly = Assembly.Load("Supor.Process.Common");
+            builder.Register(ctx =>
+            {
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfiles(assembly);
+                });
+
+                return config.CreateMapper();
+            }).As<IMapper>().SingleInstance();
+        }
+
+        /// <summary>
+        /// 注入 Log
+        /// </summary>
+        /// <param name="builder"></param>
         private static void RegisterLog(this ContainerBuilder builder)
         {
             LogManager.Setup().LoadConfigurationFromFile("nlog.config");

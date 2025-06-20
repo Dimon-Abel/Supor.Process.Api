@@ -87,3 +87,7 @@ D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csproj.CoreCo
 D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csproj.CopyComplete
 D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.dll
 D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.pdb
+D:\Supor.Process.Api\Supor.Process.Api\bin\AutoMapper.dll
+D:\Supor.Process.Api\Supor.Process.Api\bin\Supor.Process.Common.dll
+D:\Supor.Process.Api\Supor.Process.Api\bin\Supor.Process.Common.pdb
+D:\Supor.Process.Api\Supor.Process.Api\bin\AutoMapper.xml

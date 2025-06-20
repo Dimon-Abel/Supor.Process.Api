@@ -493,7 +493,7 @@
             <param name="logger"></param>
             <param name="taskDomain"></param>
         </member>
-        <member name="M:Supor.Process.Api.Controllers.Api.TaskController.Send">
+        <member name="M:Supor.Process.Api.Controllers.Api.TaskController.Send(Supor.Process.Entity.InputDto.TaskDto)">
             <summary>
             提交任务
             </summary>
@@ -525,6 +525,18 @@
         <member name="M:Supor.Process.Api.DependencyExtenstions.RegisterService(Autofac.ContainerBuilder)">
             <summary>
             注入 Service
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="M:Supor.Process.Api.DependencyExtenstions.RegisterMapper(Autofac.ContainerBuilder)">
+            <summary>
+            注入 AutoMapper
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="M:Supor.Process.Api.DependencyExtenstions.RegisterLog(Autofac.ContainerBuilder)">
+            <summary>
+            注入 Log
             </summary>
             <param name="builder"></param>
         </member>

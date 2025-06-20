@@ -1,5 +1,8 @@
 ﻿using NLog;
+using Supor.Process.Common.Extensions;
 using Supor.Process.Domain.Interfaces;
+using Supor.Process.Entity.Entity;
+using Supor.Process.Entity.InputDto;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -30,9 +33,12 @@ namespace Supor.Process.Api.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("api/Task/Send")]
-        public async Task<ApiResult<string>> Send()
+        public async Task<ApiResult<string>> Send(TaskDto taskDto)
         {
             _logger.Info($"Task.Send");
+
+            var task = taskDto.MapTo<TaskDto, TaskEntity>();
+
             var data = await _taskDomain.Send();
 
             var result = ApiResult<string>.Success(data, data);

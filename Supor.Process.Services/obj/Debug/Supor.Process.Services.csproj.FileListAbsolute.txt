@@ -12,3 +12,7 @@ D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csp
 D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csproj.CopyComplete
 D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.dll
 D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.pdb
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Autofac.dll
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\AutoMapper.dll
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Autofac.xml
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\AutoMapper.xml

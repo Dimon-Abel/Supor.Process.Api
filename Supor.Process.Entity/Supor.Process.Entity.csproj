@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\BaseEntity.cs" />
+    <Compile Include="Entity\Task.cs" />
     <Compile Include="InputDto\TaskDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
