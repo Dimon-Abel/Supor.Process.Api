@@ -1,0 +1,9 @@
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Supor.Process.Services.dll
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Supor.Process.Services.pdb
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Supor.Process.Entity.dll
+D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Supor.Process.Entity.pdb
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csprojAssemblyReference.cache
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csproj.CoreCompileInputs.cache
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csproj.CopyComplete
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.dll
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.pdb
