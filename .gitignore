@@ -1,0 +1,13 @@
+﻿################################################################################
+# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
+################################################################################
+
+/.vs/Code/v17
+/Supor.Process.Common/obj/Debug
+/Supor.Process.Domain/obj/Debug
+/Supor.Process.Entity/obj/Debug
+/Supor.Process.Services/obj/Debug
+/Supor.Process.Api/.vs/Supor.Process.Api
+/Supor.Process.Api/obj/Debug
+/Supor.Process.Common/bin/Debug
+/Supor.Process.Services/bin/Debug
