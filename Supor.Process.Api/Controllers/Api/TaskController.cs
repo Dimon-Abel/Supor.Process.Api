@@ -38,6 +38,8 @@ namespace Supor.Process.Api.Controllers.Api
             _logger.Info($"Task.Send");
 
             var task = taskDto.MapTo<TaskDto, TaskEntity>();
+            var json = task.ToJson();
+            var entity = json.FromJson<TaskEntity>();
 
             var data = await _taskDomain.Send();
 
