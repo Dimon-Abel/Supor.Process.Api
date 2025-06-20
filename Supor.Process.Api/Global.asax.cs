@@ -19,9 +19,7 @@ namespace Supor.Process.Api
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            var builder = new ContainerBuilder();
-            builder.AutofacRegister();
+            DependencyExtenstions.AutofacRegister();
         }
     }
 }

@@ -498,10 +498,22 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Supor.Process.Api.DependencyExtenstions.ApiInJectServices(Autofac.ContainerBuilder)">
+        <member name="M:Supor.Process.Api.DependencyExtenstions.AutofacRegister">
             <summary>
             Api注入服务
             </summary>
+        </member>
+        <member name="M:Supor.Process.Api.DependencyExtenstions.RegisterDomain(Autofac.ContainerBuilder)">
+            <summary>
+            注入 Domain
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="M:Supor.Process.Api.DependencyExtenstions.RegisterService(Autofac.ContainerBuilder)">
+            <summary>
+            注入 Service
+            </summary>
+            <param name="builder"></param>
         </member>
         <member name="T:Supor.Process.Api.Filters.GlobalExceptionFilter">
             <summary>

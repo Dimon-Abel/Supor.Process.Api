@@ -27,9 +27,9 @@ namespace Supor.Process.Api.Controllers.Api
         [HttpPost]
         public async Task<ApiResult<string>> Send()
         {
-            _ = await _taskDomain.Send();
+            var data = await _taskDomain.Send();
 
-            var result = ApiResult<string>.Success(null, null);
+            var result = ApiResult<string>.Success(data, data);
             return await Task.FromResult(result);
         }
     }
