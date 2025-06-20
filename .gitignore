@@ -11,3 +11,13 @@
 /Supor.Process.Api/obj/Debug
 /Supor.Process.Common/bin/Debug
 /Supor.Process.Services/bin/Debug
+/Supor.Process.Common/bin
+/Supor.Process.Domain/bin
+/Supor.Process.Entity/bin
+/Supor.Process.Services/bin
+/Supor.Process.Api/log
+/Supor.Process.Api/Log
+*.log
+*.tmp
+/Supor.Process.Api/bin
+/Supor.Process.Api/packages
