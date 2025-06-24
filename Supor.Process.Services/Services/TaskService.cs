@@ -1,10 +1,7 @@
 ﻿using NLog;
-using Supor.Process.Entity.InputDto;
+using Supor.Process.Entity.Entity;
+using Supor.Process.Services.Dapper;
 using Supor.Process.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Supor.Process.Services.Services
@@ -21,14 +18,14 @@ namespace Supor.Process.Services.Services
             _logger = logger;
         }
 
-        public async Task<string> Send(TaskDto taskDto)
+        public async Task<bool> AddAsync(params ApiTaskEntity[] entities)
         {
-            _logger.Debug($"TaskService.send");
-            return await Task.FromResult("send task");
+           
         }
 
-        // 提交任务 写入数据
+        public async Task<bool> UpdateAsync(params ApiTaskEntity[] entities)
+        {
 
-        // 二次提交 是否修改数据
+        }
     }
 }

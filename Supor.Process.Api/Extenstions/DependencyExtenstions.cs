@@ -27,6 +27,8 @@ namespace Supor.Process.Api
 
             builder.RegisterProcesssModule();
 
+            builder.RegisterDataBase();
+
             builder.RegisterLog();
 
             builder.RegisterMapper();
@@ -92,7 +94,16 @@ namespace Supor.Process.Api
             builder.RegisterAssemblyTypes(assembly)
                 .Where(x => (x.Name.EndsWith("Validtor") || x.Name.EndsWith("Processor") || x.Name.EndsWith("ProcessorFactory")) && !x.IsAbstract)
                 .AsImplementedInterfaces()
-                .SingleInstance();
+                .InstancePerLifetimeScope();
+        }
+
+        private static void RegisterDataBase(this ContainerBuilder builder)
+        {
+            var assembly = Assembly.Load("Supor.Process.Services");
+            builder.RegisterAssemblyTypes(assembly)
+               .Where(x => x.Name.EndsWith("Executor") && !x.IsAbstract)
+               .AsImplementedInterfaces()
+               .InstancePerLifetimeScope();
         }
 
         /// <summary>

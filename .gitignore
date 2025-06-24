@@ -5,19 +5,26 @@
 /Supor.Process.Api/logs
 /Supor.Process.Api/bin
 /Supor.Process.Api/obj
+/Supor.Process.Api/packages
+
 
 /Supor.Process.Common/logs
 /Supor.Process.Common/bin
 /Supor.Process.Common/obj
+/Supor.Process.Common/packages
+
 
 /Supor.Process.Domain/logs
 /Supor.Process.Domain/bin
 /Supor.Process.Domain/obj
+/Supor.Process.Domain/packages
 
 /Supor.Process.Entity/logs
 /Supor.Process.Entity/bin
 /Supor.Process.Entity/obj
+/Supor.Process.Entity/packages
 
 /Supor.Process.Services/logs
 /Supor.Process.Services/bin
 /Supor.Process.Services/obj
+/Supor.Process.Services/packages

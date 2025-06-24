@@ -99,6 +99,21 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="RefDLL\AP.ProcessHandler.dll" />
+    <Content Include="RefDLL\AP.UserFinder.dll" />
+    <Content Include="RefDLL\Client.Library.dll" />
+    <Content Include="RefDLL\DMM.Library.dll" />
+    <Content Include="RefDLL\Entity.Library.dll" />
+    <Content Include="RefDLL\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="RefDLL\KFLibrary.dll" />
+    <Content Include="RefDLL\Newtonsoft.Json.dll" />
+    <Content Include="RefDLL\NPOI.dll" />
+    <Content Include="RefDLL\NPOI.OOXML.dll" />
+    <Content Include="RefDLL\NPOI.OpenXml4Net.dll" />
+    <Content Include="RefDLL\NPOI.OpenXmlFormats.dll" />
+    <Content Include="RefDLL\sapnco.dll" />
+    <Content Include="RefDLL\sapnco_utils.dll" />
+    <Content Include="RefDLL\Supor.Utility.dll" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -110,8 +125,6 @@
       <Name>Supor.Process.Entity</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RefDLL\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

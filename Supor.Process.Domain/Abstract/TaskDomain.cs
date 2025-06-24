@@ -8,6 +8,9 @@ using System;
 using System.Threading.Tasks;
 using Supor.Process.Common.Extensions;
 using Supor.Process.Common.Processor;
+using System.Collections.Generic;
+using Supor.Process.Entity.Entity;
+using System.Linq;
 
 namespace Supor.Process.Domain.Abstract
 {
@@ -36,6 +39,7 @@ namespace Supor.Process.Domain.Abstract
             // 验证提交数据
             if (ValidTask(dto))
             {
+                List<ApiTaskEntity> tasks = null;
                 // 任务处理器
                 var processor = _processorFactory.GetProcessor(dto.SourceName);
 
@@ -49,14 +53,18 @@ namespace Supor.Process.Domain.Abstract
 
                     if (processor != null)
                     {
-                        var tasks = processor.SendTask(dto, item);
-                        await _taskService.Send(dto);
+                        tasks.Add(processor.SendTask(dto, item));
                     }
                     else
                     {
                         _logger.Error($"任务处理器未实现。");
                         throw new Exception("任务处理器未实现。");
                     }
+                }
+
+                if (tasks.Any())
+                {
+
                 }
             }
 
