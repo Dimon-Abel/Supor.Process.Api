@@ -51,6 +51,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Supor.Process.Common\Supor.Process.Common.csproj">
+      <Project>{6e0b74b0-64b4-45bf-b630-ccd52f4591fa}</Project>
+      <Name>Supor.Process.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Supor.Process.Entity\Supor.Process.Entity.csproj">
       <Project>{CD452ED1-61DA-497F-99E9-B1D0EE532B9E}</Project>
       <Name>Supor.Process.Entity</Name>
@@ -63,5 +67,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

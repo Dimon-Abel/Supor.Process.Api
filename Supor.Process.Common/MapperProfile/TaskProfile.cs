@@ -8,9 +8,9 @@ namespace Supor.Process.Common.MapperProfile
     {
         public TaskProfile()
         {
-            CreateMap<TaskEntity, TaskDto>()
-                .ForMember(t => t.Id, d => d.MapFrom(x => x.Id))
-                .ForMember(t => t.TaskName, d => d.MapFrom(x => x.TaskName));
+            //CreateMap<TaskEntity, TaskDto>()
+            //    .ForMember(t => t.Id, d => d.MapFrom(x => x.Id))
+            //    .ForMember(t => t.TaskName, d => d.MapFrom(x => x.TaskName));
         }
     }
 }

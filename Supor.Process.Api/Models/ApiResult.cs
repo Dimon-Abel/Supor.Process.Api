@@ -4,7 +4,7 @@
     /// http result
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ApiResult<T>
+    public class ApiResult
     {
         /// <summary>
         /// Status
@@ -14,7 +14,7 @@
         /// <summary>
         /// Data
         /// </summary>
-        public T Data { get; set; }
+        public object Data { get; set; }
 
         /// <summary>
         /// Message
@@ -29,21 +29,21 @@
         /// <param name="status"></param>
         /// <param name="data"></param>
         /// <param name="message"></param>
-        public ApiResult(Status status, T data, string message)
+        public ApiResult(Status status, object data, string message)
         {
             Status = status;
             Data = data;
             Message = message;
         }
 
-        public static ApiResult<T> Success(T data = default, string message = null)
+        public static ApiResult Success(object data = default, string message = null)
         {
-            return new ApiResult<T>(Status.Success, data, message);
+            return new ApiResult(Status.Success, data, message);
         }
 
-        public static ApiResult<T> Faild(T data = default, string message = null)
+        public static ApiResult Faild(object data = default, string message = null)
         {
-            return new ApiResult<T>(Status.Faild, data, message);
+            return new ApiResult(Status.Faild, data, message);
         }
 
         #endregion

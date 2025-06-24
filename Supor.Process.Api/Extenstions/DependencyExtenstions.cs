@@ -25,6 +25,8 @@ namespace Supor.Process.Api
             builder.RegisterDomain();
             builder.RegisterService();
 
+            builder.RegisterProcesssModule();
+
             builder.RegisterLog();
 
             builder.RegisterMapper();
@@ -78,6 +80,19 @@ namespace Supor.Process.Api
 
                 return config.CreateMapper();
             }).As<IMapper>().SingleInstance();
+        }
+
+        /// <summary>
+        /// 注入流程校验器、流程处理器
+        /// </summary>
+        /// <param name="builder"></param>
+        private static void RegisterProcesssModule(this ContainerBuilder builder)
+        {
+            var assembly = Assembly.Load("Supor.Process.Common");
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(x => (x.Name.EndsWith("Validtor") || x.Name.EndsWith("Processor")) && !x.IsAbstract)
+                .AsImplementedInterfaces()
+                .SingleInstance();
         }
 
         /// <summary>

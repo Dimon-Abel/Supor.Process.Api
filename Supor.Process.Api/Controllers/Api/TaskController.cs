@@ -3,6 +3,7 @@ using Supor.Process.Common.Extensions;
 using Supor.Process.Domain.Interfaces;
 using Supor.Process.Entity.Entity;
 using Supor.Process.Entity.InputDto;
+using System;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -30,22 +31,37 @@ namespace Supor.Process.Api.Controllers.Api
         /// <summary>
         /// 提交任务
         /// </summary>
+        /// <param name="taskDto">任务数据</param>
         /// <returns></returns>
         [HttpPost]
         [Route("api/Task/Send")]
-        public async Task<ApiResult<string>> Send(TaskDto taskDto)
+        public async Task<ApiResult> Send(TaskDto taskDto)
         {
             _logger.Info($"Task.Send");
 
-            var task = taskDto.MapTo<TaskDto, TaskEntity>();
-            var json = task.ToJson();
-            var entity = json.FromJson<TaskEntity>();
+            try
+            {
+                var data = await _taskDomain.Send(taskDto);
+                return await Task.FromResult(ApiResult.Success(data, "提交成功"));
 
-            var data = await _taskDomain.Send();
-
-            var result = ApiResult<string>.Success(data, data);
-            return await Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(ApiResult.Faild(null, ex.Message));
+            }
         }
+
+        ///// <summary>
+        ///// 异步提交任务
+        ///// </summary>
+        ///// <param name="taskDto">任务数据</param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //[Route("api/Task/SendAsync")]
+        //public async Task<ApiResult<string>> SendAsync(TaskDto taskDto)
+        //{
+
+        //}
 
         /// <summary>
         /// 测试异常写入

@@ -1,0 +1,39 @@
+{
+"ProcessName": "合同评审流程",
+	"SourceName": "SEC",
+	"CreateUserID": "CN\\WGLAN",
+	"CreateDate": "2025-06-23 09:53:06.750",
+  "ProcessData": {	
+		"Guid": "54D54DD3-6E4F-496F-9617-A8ECACC05828",
+		"contractCategory": 1,
+		"contractTypeID": 3,
+		"contractTypeTree": "长期采购/04-生产采购类/长期采购",
+		"contractName_supor": "测试发起",
+		"contractNumber_supor": "SEC202506230083",
+		"contractOrder": "SECLLFT202506230003",
+		"isTemplate": "1",
+		"allUseTemplate_supor": 2,
+		"contractAmount_supor": "200000.01",
+		"hetongqixianyinianjiyishang": 1,
+		"System_ApplyUserName": "王光兰",
+		"Sys_UserCode": "02002536",
+		"System_ApplyUserID": "CN\\WGLAN",
+		"Sys_OrgCode": "82000102",
+		"Sys_BuCode": "80001000",
+		"Sys_PosCode": "80005169",
+		"Status": "0",
+		"SignRemarks":"新签合同，请领导审核！",
+"IsUpdatedBData":"0",
+"PCUrl":"https://sec-dev.supor.com/contractApproval/detail?id=6858b37f2ac8295264db2749&flowId=92&tab=APPROVAL_NODE_TAB&active=0&userInfo=Mzkx&u=",
+"mobileUrl":"https://sec-dev.supor.com/contractApproval/detail?id=6858b37f2ac8295264db2749&flowId=92&tab=APPROVAL_NODE_TAB&active=0&userInfo=Mzkx&u=",
+"Details1":[],
+"AttachmentDetails":[]
+	}
+}
+
+
+审批记录写入成功后
+
+
+
+执行调用流程提交后逻辑

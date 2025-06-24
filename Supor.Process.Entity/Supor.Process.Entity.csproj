@@ -43,7 +43,11 @@
   <ItemGroup>
     <Compile Include="Base\BaseEntity.cs" />
     <Compile Include="Entity\Task.cs" />
+    <Compile Include="Enums\EnumLanchStatus.cs" />
+    <Compile Include="Enums\EnumTaskStatus.cs" />
+    <Compile Include="InputDto\ProcessDataDto.cs" />
     <Compile Include="InputDto\TaskDto.cs" />
+    <Compile Include="OutDto\TaskOutDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
