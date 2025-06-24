@@ -5,7 +5,7 @@ namespace Supor.Process.Entity.Entity
 	/// <summary>
 	/// 任务表
 	/// </summary>
-	public class TaskEntity
+	public class ApiTaskEntity
 	{
 		/// <summary>
 		/// 标识

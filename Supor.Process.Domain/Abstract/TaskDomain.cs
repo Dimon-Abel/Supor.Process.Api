@@ -7,6 +7,7 @@ using Supor.Process.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 using Supor.Process.Common.Extensions;
+using Supor.Process.Common.Processor;
 
 namespace Supor.Process.Domain.Abstract
 {
@@ -18,11 +19,14 @@ namespace Supor.Process.Domain.Abstract
 
         private readonly IProcessVaildtor _vaildtor;
 
-        public TaskDomain(ILogger logger ,ITaskService taskService, IProcessVaildtor vaildtor)
+        private readonly IProcessorFactory _processorFactory;
+
+        public TaskDomain(ILogger logger, ITaskService taskService, IProcessVaildtor vaildtor, IProcessorFactory processorFactory)
         {
             _logger = logger;
             _taskService = taskService;
             _vaildtor = vaildtor;
+            _processorFactory = processorFactory;
         }
 
         public async Task<TaskOutDto> Send(TaskDto dto)
@@ -30,19 +34,30 @@ namespace Supor.Process.Domain.Abstract
             var result = new TaskOutDto();
 
             // 验证提交数据
-            if(ValidTask(dto))
+            if (ValidTask(dto))
             {
+                // 任务处理器
+                var processor = _processorFactory.GetProcessor(dto.SourceName);
+
                 foreach (var item in dto.ProcessData)
                 {
                     // 验证业务数据
-                    if (!_vaildtor.FieldValid(dto.ProcessData, out var message))
+                    if (!_vaildtor.FieldValid(item, out var message))
                     {
                         throw new Exception(message);
                     }
+
+                    if (processor != null)
+                    {
+                        var tasks = processor.SendTask(dto, item);
+                        await _taskService.Send(dto);
+                    }
+                    else
+                    {
+                        _logger.Error($"任务处理器未实现。");
+                        throw new Exception("任务处理器未实现。");
+                    }
                 }
-
-
-
             }
 
             result.Success = true;
@@ -67,7 +82,7 @@ namespace Supor.Process.Domain.Abstract
                 throw new Exception($"用户ID不能为空。");
             }
 
-            if(dto.ProcessData == null)
+            if (dto.ProcessData == null)
             {
                 throw new Exception($"流程业务数据不能为空");
             }

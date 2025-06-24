@@ -2,10 +2,13 @@
 {
     public class ProcessDataDto
     {
+        public string Guid { get; set; }
+
         /// <summary>
         /// 申请人名称
         /// </summary>
         public string System_ApplyUserName { get; set; }
+
         /// <summary>
         /// 用户Cdoe
         /// </summary>
@@ -26,6 +29,10 @@
         /// PosCode
         /// </summary>
         public string Sys_PosCode { get; set; }
+
+        public string System_ApplyEmail { get; set; }
+
+        public string Sys_OrgName { get; set; }
 
         public string Status { get; set; }
         /// <summary>

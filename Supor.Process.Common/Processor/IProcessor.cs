@@ -7,13 +7,19 @@ namespace Supor.Process.Common.Processor
     /// <summary>
     /// 流程处理器
     /// </summary>
-    public interface IProcessor<T>
+    public interface IProcessor
     {
+        /// <summary>
+        /// 获取处理器标签
+        /// </summary>
+        /// <returns></returns>
+        string GetTag();
+
         /// <summary>
         /// 创建任务数据
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        IEnumerable<TaskEntity> CreateTask(TaskDto dto);
+        ApiTaskEntity SendTask(TaskDto dto, object processData);
     }
 }

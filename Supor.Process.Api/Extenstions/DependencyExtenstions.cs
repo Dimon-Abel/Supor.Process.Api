@@ -90,7 +90,7 @@ namespace Supor.Process.Api
         {
             var assembly = Assembly.Load("Supor.Process.Common");
             builder.RegisterAssemblyTypes(assembly)
-                .Where(x => (x.Name.EndsWith("Validtor") || x.Name.EndsWith("Processor")) && !x.IsAbstract)
+                .Where(x => (x.Name.EndsWith("Validtor") || x.Name.EndsWith("Processor") || x.Name.EndsWith("ProcessorFactory")) && !x.IsAbstract)
                 .AsImplementedInterfaces()
                 .SingleInstance();
         }

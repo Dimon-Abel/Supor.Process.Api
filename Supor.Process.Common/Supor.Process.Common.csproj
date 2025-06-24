@@ -37,11 +37,27 @@
     <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\Supor.Process.Api\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="Client.Library">
+      <HintPath>RefDLL\Client.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="DMM.Library">
+      <HintPath>RefDLL\DMM.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="Entity.Library">
+      <HintPath>RefDLL\Entity.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="KFLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>RefDLL\KFLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\Supor.Process.Api\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\Supor.Process.Api\packages\NLog.5.5.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Supor.Utility">
+      <HintPath>RefDLL\Supor.Utility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -53,6 +69,7 @@
       <HintPath>..\Supor.Process.Api\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,8 +82,13 @@
     <Compile Include="Extensions\BaseExtension.cs" />
     <Compile Include="MapperProfile\ProcessDataProfile.cs" />
     <Compile Include="MapperProfile\TaskProfile.cs" />
+    <Compile Include="Processor\BaseData.cs" />
+    <Compile Include="Processor\BaseProcessor.cs" />
     <Compile Include="Processor\BPMProcessor.cs" />
     <Compile Include="Processor\IProcessor.cs" />
+    <Compile Include="Processor\IProcessorFactory.cs" />
+    <Compile Include="Processor\ProcessorFactory.cs" />
+    <Compile Include="Processor\SECProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLocator.cs" />
     <Compile Include="Validtors\BaseProcesssVaildator.cs" />
