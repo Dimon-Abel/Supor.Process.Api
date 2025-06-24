@@ -60,5 +60,7 @@ namespace Supor.Process.Services.Dapper
 
         /// <inheritdoc />
         Task<T> ExecuteScalarAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "busDB");
+
+        Task<int> ExecuteAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "busDB");
     }
 }

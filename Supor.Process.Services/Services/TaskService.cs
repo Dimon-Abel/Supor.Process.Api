@@ -20,7 +20,7 @@ namespace Supor.Process.Services.Services
 
         public async Task<bool> AddAsync(params ApiTaskEntity[] entities)
         {
-           
+
         }
 
         public async Task<bool> UpdateAsync(params ApiTaskEntity[] entities)

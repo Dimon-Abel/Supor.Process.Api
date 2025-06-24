@@ -1,15 +1,18 @@
 ﻿using Supor.Process.Entity.Enums;
+using Supor.Process.Entity.Attributies;
 
 namespace Supor.Process.Entity.Entity
 {
 	/// <summary>
 	/// 任务表
 	/// </summary>
+	[TableName("I_OSYS_PROCDATA_ITEMS")]
 	public class ApiTaskEntity
 	{
 		/// <summary>
 		/// 标识
 		/// </summary>
+		[PrimaryKey]
 		public string GUID { get; set; }
 		/// <summary>
 		/// 

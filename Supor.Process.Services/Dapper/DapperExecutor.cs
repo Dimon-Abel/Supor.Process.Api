@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using KFLibrary.Configuration;
 using System.Threading.Tasks;
 
+
 namespace Supor.Process.Services.Dapper
 {
     public class DapperExecutor : IDapperExecutor
@@ -229,6 +230,17 @@ namespace Supor.Process.Services.Dapper
                 return await connection.ExecuteScalarAsync<T>(sql, param, transaction, commandTimeout, null);
             }
         }
+
+        public async Task<int> ExecuteAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "busDB")
+        {
+            using (var connection = new SqlConnection(GetConnectionString(dbName)))
+            {
+                await connection.OpenAsync();
+
+                return await connection.ExecuteAsync(sql, param, transaction, commandTimeout, null);
+            }
+        }
+
 
         /// <summary>
         /// 获取链接字符串

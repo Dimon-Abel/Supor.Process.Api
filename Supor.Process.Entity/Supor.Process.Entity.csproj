@@ -41,8 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributies\PrimaryKeyAttribute.cs" />
+    <Compile Include="Attributies\SqlIgnoreAttribute.cs" />
+    <Compile Include="Attributies\TableNameAttribute.cs" />
     <Compile Include="Base\BaseEntity.cs" />
-    <Compile Include="Entity\Task.cs" />
+    <Compile Include="Entity\ApiTaskEntity.cs" />
     <Compile Include="Enums\EnumLanchStatus.cs" />
     <Compile Include="Enums\EnumTaskStatus.cs" />
     <Compile Include="InputDto\ProcessDataDto.cs" />
