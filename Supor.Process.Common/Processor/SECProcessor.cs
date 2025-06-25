@@ -16,7 +16,7 @@ namespace Supor.Process.Common.Processor
             return "SEC";
         }
 
-        public override bool BusDataToDB(ApiTaskEntity task, ProcessDataDto dto, object processData, TaskEntity te)
+        public override bool BusDataToDB(I_OSYS_PROCDATA_ITEMS task, ProcessDataDto dto, object processData, TaskEntity te)
         {
             return true;
         }

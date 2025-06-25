@@ -20,6 +20,6 @@ namespace Supor.Process.Common.Processor
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        ApiTaskEntity SendTask(TaskDto dto, object processData);
+        I_OSYS_PROCDATA_ITEMS SendTask(TaskDto dto, object processData);
     }
 }

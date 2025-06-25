@@ -18,12 +18,12 @@ namespace Supor.Process.Services.Services
             _logger = logger;
         }
 
-        public async Task<bool> AddAsync(params ApiTaskEntity[] entities)
+        public async Task<bool> AddAsync(params I_OSYS_PROCDATA_ITEMS[] entities)
         {
 
         }
 
-        public async Task<bool> UpdateAsync(params ApiTaskEntity[] entities)
+        public async Task<bool> UpdateAsync(params I_OSYS_PROCDATA_ITEMS[] entities)
         {
 
         }

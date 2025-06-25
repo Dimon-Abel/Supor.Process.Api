@@ -39,7 +39,7 @@ namespace Supor.Process.Domain.Abstract
             // 验证提交数据
             if (ValidTask(dto))
             {
-                List<ApiTaskEntity> tasks = null;
+                List<I_OSYS_PROCDATA_ITEMS> tasks = null;
                 // 任务处理器
                 var processor = _processorFactory.GetProcessor(dto.SourceName);
 

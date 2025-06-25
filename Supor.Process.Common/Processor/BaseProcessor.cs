@@ -33,7 +33,7 @@ namespace Supor.Process.Common.Processor
             return "Base";
         }
 
-        public virtual ApiTaskEntity SendTask(TaskDto dto, object processData)
+        public virtual I_OSYS_PROCDATA_ITEMS SendTask(TaskDto dto, object processData)
         {
             string sourceName = string.Empty, appNo = string.Empty;
             string processName = string.Empty, procInstId = string.Empty, summary = string.Empty;
@@ -623,7 +623,7 @@ namespace Supor.Process.Common.Processor
             return task;
         }
 
-        public virtual bool BusDataToDB(ApiTaskEntity task, ProcessDataDto dto, object processData, TaskEntity te)
+        public virtual bool BusDataToDB(I_OSYS_PROCDATA_ITEMS task, ProcessDataDto dto, object processData, TaskEntity te)
         {
             DataCenter dc = new DataCenter("busDB");
             return dc.ExecuteNonQuery((tran) =>
@@ -668,9 +668,9 @@ namespace Supor.Process.Common.Processor
 
         }
 
-        private ApiTaskEntity SubmitTaskEntity(TaskDto task, ProcessDataDto json)
+        private I_OSYS_PROCDATA_ITEMS SubmitTaskEntity(TaskDto task, ProcessDataDto json)
         {
-            var entity = new ApiTaskEntity()
+            var entity = new I_OSYS_PROCDATA_ITEMS()
             {
                 GUID = Guid.NewGuid().ToString("N"),
                 ProcessName = task.ProcessName,
@@ -690,7 +690,7 @@ namespace Supor.Process.Common.Processor
             return entity;
         }
 
-        private ApiTaskEntity UpdateTaskEntity(ProcessDataDto dto)
+        private I_OSYS_PROCDATA_ITEMS UpdateTaskEntity(ProcessDataDto dto)
         {
             return null;
         }

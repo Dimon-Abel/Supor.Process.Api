@@ -6,8 +6,7 @@ namespace Supor.Process.Entity.Entity
 	/// <summary>
 	/// 任务表
 	/// </summary>
-	[TableName("I_OSYS_PROCDATA_ITEMS")]
-	public class ApiTaskEntity
+	public class I_OSYS_PROCDATA_ITEMS
 	{
 		/// <summary>
 		/// 标识
