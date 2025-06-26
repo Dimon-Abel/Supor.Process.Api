@@ -42,7 +42,7 @@ namespace Supor.Process.Domain.Abstract
             var tasks = dto.ProcessData.Select(async item =>
             {
                 if (!_vaildtor.FieldValid(item, out var msg)) throw new Exception(msg);
-                return await processor.SendTask(dto, item);
+                return await processor.SendTaskAsync(dto, item);
             }).ToList();
 
             try

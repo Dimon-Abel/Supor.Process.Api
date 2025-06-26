@@ -65,7 +65,7 @@ namespace Supor.Process.Services.Processor
             _orgInfoService = orgInfoService;
         }
 
-        public virtual async Task<(I_OSYS_PROCDATA_ITEMS, I_OSYS_PROC_INSTS, I_OSYS_WF_WORKITEMS)> SendTask(TaskDto dto, object processData)
+        public virtual async Task<(I_OSYS_PROCDATA_ITEMS, I_OSYS_PROC_INSTS, I_OSYS_WF_WORKITEMS)> SendTaskAsync(TaskDto dto, object processData)
         {
             string status = string.Empty, sourceName = string.Empty, appNo = string.Empty;
             string processName = string.Empty, procInstId = string.Empty, summary = string.Empty;

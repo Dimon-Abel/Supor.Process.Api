@@ -20,6 +20,6 @@ namespace Supor.Process.Services.Processor
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        Task<(I_OSYS_PROCDATA_ITEMS, I_OSYS_PROC_INSTS, I_OSYS_WF_WORKITEMS)> SendTask(TaskDto dto, object processData);
+        Task<(I_OSYS_PROCDATA_ITEMS, I_OSYS_PROC_INSTS, I_OSYS_WF_WORKITEMS)> SendTaskAsync(TaskDto dto, object processData);
     }
 }
