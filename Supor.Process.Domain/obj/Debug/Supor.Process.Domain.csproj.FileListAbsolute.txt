@@ -1,3 +1,5 @@
+D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.csprojAssemblyReference.cache
+D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.csproj.CoreCompileInputs.cache
 D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\RefDLL\ICSharpCode.SharpZipLib.dll
 D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\RefDLL\KFLibrary.dll
 D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\RefDLL\sapnco.dll
@@ -37,8 +39,6 @@ D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\Autofac.xml
 D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\AutoMapper.xml
 D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\Newtonsoft.Json.xml
 D:\Supor.Process.Api\Supor.Process.Domain\bin\Debug\Dapper.xml
-D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.csprojAssemblyReference.cache
-D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.csproj.CoreCompileInputs.cache
 D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.csproj.CopyComplete
 D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.dll
 D:\Supor.Process.Api\Supor.Process.Domain\obj\Debug\Supor.Process.Domain.pdb

@@ -7,7 +7,7 @@
         /// </summary>
         Submit = 0,
         /// <summary>
-        /// 统一
+        /// 同意
         /// </summary>
         Agree = 1,
         /// <summary>

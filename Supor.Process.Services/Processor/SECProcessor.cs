@@ -4,6 +4,10 @@ using Supor.Process.Entity.Entity;
 using Supor.Process.Entity.InputDto;
 using Supor.Process.Services.Repositories;
 using Supor.Process.Services.Services;
+using Supor.Utility.Data;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace Supor.Process.Services.Processor
 {
@@ -23,7 +27,35 @@ namespace Supor.Process.Services.Processor
             return "SEC";
         }
 
-        public override bool BusDataToDB(I_OSYS_PROCDATA_ITEMS task, ProcessDataDto dto, object processData, TaskEntity te)
+        public override bool SubmitBusDataToDB(TaskDto dto, ProcessDataDto processDataDto, Dictionary<string, object> formData, TaskEntity te, string status, string appNo, string procInstId)
+        {
+            DataCenter dc = new DataCenter("BPM_Trans");
+            return dc.ExecuteNonQuery((tran) =>
+            {
+                try
+                {
+                    object[] objMain = formData["main"] as object[];
+
+                    int res = 0;
+                    KFLibrary.Log.LoggorHelper.WriteLog(appNo + "开始插入业务表数据。关联信息：" + procInstId);
+
+                    //流程实例表数据插入
+                    KFLibrary.Log.LoggorHelper.WriteLog(appNo + "开始插入业务流程实例表数据。关联信息：" + procInstId);
+                    res += new BaseData().SaveProcInstsInfo(procInstId, tran);
+                    KFLibrary.Log.LoggorHelper.WriteLog(appNo + "插入业务流程实例表数据成功。关联信息：" + procInstId);
+                }
+                catch (Exception insertex)
+                {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | (SecurityProtocolType)0x300 | (SecurityProtocolType)0xC00;
+                    soap.SetProcessStall(dto.CreateUserID, procInstId); // 自动取消流程
+                    throw insertex;
+                }
+
+                return true;
+            });
+        }
+
+        public override bool UpdateBusDataToDB(TaskDto dto, ProcessDataDto processDataDto, Dictionary<string, object> formData, TaskEntity te, string status, string appNo, string procInstId)
         {
             return true;
         }

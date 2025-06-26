@@ -1,3 +1,5 @@
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csprojAssemblyReference.cache
+D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csproj.CoreCompileInputs.cache
 D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\RefDLL\ICSharpCode.SharpZipLib.dll
 D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\RefDLL\KFLibrary.dll
 D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\RefDLL\sapnco.dll
@@ -34,8 +36,6 @@ D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\NLog.xml
 D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\System.ValueTuple.xml
 D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\Autofac.xml
 D:\Supor.Process.Api\Supor.Process.Services\bin\Debug\AutoMapper.xml
-D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csprojAssemblyReference.cache
-D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csproj.CoreCompileInputs.cache
 D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.csproj.CopyComplete
 D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.dll
 D:\Supor.Process.Api\Supor.Process.Services\obj\Debug\Supor.Process.Services.pdb

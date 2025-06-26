@@ -1,3 +1,5 @@
+D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csprojAssemblyReference.cache
+D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csproj.CoreCompileInputs.cache
 D:\Supor.Process.Api\Supor.Process.Api\bin\RefDLL\ICSharpCode.SharpZipLib.dll
 D:\Supor.Process.Api\Supor.Process.Api\bin\RefDLL\KFLibrary.dll
 D:\Supor.Process.Api\Supor.Process.Api\bin\RefDLL\sapnco.dll
@@ -108,8 +110,6 @@ D:\Supor.Process.Api\Supor.Process.Api\bin\zh-Hans\System.Web.Razor.resources.dl
 D:\Supor.Process.Api\Supor.Process.Api\bin\zh-Hans\System.Web.WebPages.resources.dll
 D:\Supor.Process.Api\Supor.Process.Api\bin\zh-Hans\System.Web.WebPages.Deployment.resources.dll
 D:\Supor.Process.Api\Supor.Process.Api\bin\zh-Hans\System.Web.WebPages.Razor.resources.dll
-D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csprojAssemblyReference.cache
-D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csproj.CoreCompileInputs.cache
 D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.csproj.CopyComplete
 D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.dll
 D:\Supor.Process.Api\Supor.Process.Api\obj\Debug\Supor.Process.Api.pdb
