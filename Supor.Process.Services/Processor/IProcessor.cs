@@ -1,8 +1,8 @@
 ﻿using Supor.Process.Entity.Entity;
 using Supor.Process.Entity.InputDto;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Supor.Process.Common.Processor
+namespace Supor.Process.Services.Processor
 {
     /// <summary>
     /// 流程处理器
@@ -20,6 +20,6 @@ namespace Supor.Process.Common.Processor
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        I_OSYS_PROCDATA_ITEMS SendTask(TaskDto dto, object processData);
+        Task<(I_OSYS_PROCDATA_ITEMS, I_OSYS_PROC_INSTS, I_OSYS_WF_WORKITEMS)> SendTask(TaskDto dto, object processData);
     }
 }

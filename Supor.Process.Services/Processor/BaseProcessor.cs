@@ -19,21 +19,51 @@ using System.Data;
 using Supor.Utility.Email;
 using System.Net.Mail;
 using System.Text;
+using Supor.Process.Services.Repositories;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using Supor.Process.Services.Services;
+using NLog;
 
-namespace Supor.Process.Common.Processor
+namespace Supor.Process.Services.Processor
 {
     public abstract class BaseProcessor : IProcessor
     {
+        protected ILogger _logger;
+
         protected static TaskAPI TaskAPI = new TaskAPI();
 
         protected WorkFlowAPISoapClient soap = new WorkFlowAPISoapClient();
 
-        public virtual string GetTag()
+        protected readonly II_OSYS_PROCDATA_ITEMSRepository _i_OSYS_PROCDATA_ITEMSRepository;
+
+        protected readonly II_OSYS_PROC_INSTSRepository _i_OSYS_PROC_INSTSRepository;
+
+        protected readonly II_OSYS_WF_WORKITEMSRepository _i_OSYS_WF_WORKITEMSRepository;
+
+        protected readonly IPerInfoService _perInfoService;
+
+        protected readonly IProcessItemsService _processItemsService;
+
+        protected readonly IOrgInfoService _orgInfoService;
+
+        public BaseProcessor(ILogger logger, II_OSYS_PROCDATA_ITEMSRepository i_OSYS_PROCDATA_ITEMSRepository,
+            II_OSYS_PROC_INSTSRepository i_OSYS_PROC_INSTSRepository,
+            II_OSYS_WF_WORKITEMSRepository i_OSYS_WF_WORKITEMSRepository,
+            IPerInfoService perInfoService,
+            IProcessItemsService processItemsService,
+            IOrgInfoService orgInfoService)
         {
-            return "Base";
+            _logger = logger;
+            _i_OSYS_PROCDATA_ITEMSRepository = i_OSYS_PROCDATA_ITEMSRepository;
+            _i_OSYS_PROC_INSTSRepository = i_OSYS_PROC_INSTSRepository;
+            _i_OSYS_WF_WORKITEMSRepository = i_OSYS_WF_WORKITEMSRepository;
+            _perInfoService = perInfoService;
+            _processItemsService = processItemsService;
+            _orgInfoService = orgInfoService;
         }
 
-        public virtual I_OSYS_PROCDATA_ITEMS SendTask(TaskDto dto, object processData)
+        public virtual async Task<(I_OSYS_PROCDATA_ITEMS, I_OSYS_PROC_INSTS, I_OSYS_WF_WORKITEMS)> SendTask(TaskDto dto, object processData)
         {
             string sourceName = string.Empty, appNo = string.Empty;
             string processName = string.Empty, procInstId = string.Empty, summary = string.Empty;
@@ -43,16 +73,24 @@ namespace Supor.Process.Common.Processor
 
             var json = processData.ToJson().FromJson<ProcessDataDto>();
             Enum.TryParse<EnumTaskStatus>(json.Status, out var status);
+
+
             var task = status == EnumTaskStatus.Submit
-                    ? SubmitTaskEntity(dto, json)
-                    : UpdateTaskEntity(json);
+                    ? Create_I_OSYS_PROCDATA_ITEMS(dto, json)
+                    : await Get_I_OSYS_PROCDATA_ITEMS(json.Guid);
+
+            var ins = status == EnumTaskStatus.Submit
+                ? Create_I_OSYS_PROC_INSTS(dto, json)
+                : await Get_I_OSYS_PROC_INSTS(task.ProcInstId);
+
+            var workitem = status == EnumTaskStatus.Submit
+                ? Create_I_OSYS_WF_WORKITEMS(dto, json)
+                : await Get_I_OSYS_WF_WORKITEMS(task.ProcInstId);
 
             try
             {
-
                 var wpscl = new SYS_Workflow_ProcessStepConfigLogic();//获取表单配置
                 var StepConfig = new List<SYS_Workflow_ProcessStepConfigEntity>();//步骤配置
-
 
                 #region 判断是否来源于公共账号
                 string ads = Configs.AppSettings("PublicPerADs");
@@ -68,10 +106,15 @@ namespace Supor.Process.Common.Processor
                         }
                     }
                 }
+
                 #endregion
 
-                Dictionary<string, object> formData = task.ProcessData.FromJson<Dictionary<string, object>>();
+                // 转换成页面提交数据结构
+                Dictionary<string, object> formData = ConvertToFormData(dto, isPublicPerAD);
 
+                task.ProcessData = formData.ToJson();
+
+                _logger.Info($"formData: {formData.ToJson()}");
 
                 if (task.Status == EnumTaskStatus.Submit)
                 {
@@ -99,7 +142,8 @@ namespace Supor.Process.Common.Processor
                                     Dictionary<string, string> dicConfig = SettingHelper.DeSetting(ent.ProcessConfig);
                                     if (dicConfig.ContainsKey("prefix") && dicConfig.ContainsKey("nolength"))
                                     {
-                                        task.ProcApplyNo = AppNoHelper.GetIdentity(dicConfig["prefix"] + DateTime.Now.ToString("yyyyMMdd"), null, Convert.ToInt32(dicConfig["nolength"]), true);
+                                        appNo = AppNoHelper.GetIdentity(dicConfig["prefix"] + DateTime.Now.ToString("yyyyMMdd"), null, Convert.ToInt32(dicConfig["nolength"]), true);
+                                        task.ProcApplyNo = appNo;
                                     }
 
                                     if (dicConfig.ContainsKey("process_summarys"))
@@ -240,8 +284,18 @@ namespace Supor.Process.Common.Processor
                                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | (SecurityProtocolType)0x300 | (SecurityProtocolType)0xC00;
                                 workItemId = soap.SendTask(task.CreateUserID.Replace("/", "\\"), defModel.DefId, summary, TaskAPI.ListVars.ToArray(), false, ref procInstId);
 
-                                // 流程实例号回填
+                                #region 回传任务信息填写
+
                                 task.ProcInstId = procInstId;
+
+                                ins.PROC_INST_ID = procInstId;
+                                ins.PROC_APPLYNO = task.ProcApplyNo;
+                                ins.PROC_INST_NAME = summary;
+
+                                workitem.WORK_ITEM_ID = workItemId;
+
+                                #endregion
+
 
                                 if (!string.IsNullOrWhiteSpace(workItemId) && !string.IsNullOrWhiteSpace(task.ProcInstId))
                                 {
@@ -249,7 +303,7 @@ namespace Supor.Process.Common.Processor
                                     KFLibrary.Log.LoggorHelper.WriteLog(summary + "已经创建.ProcInstId:" + task.ProcInstId + ",workItemId:" + workItemId);
                                     try
                                     {
-                                        DataCenter dc = new DataCenter("busDB");
+                                        DataCenter dc = new DataCenter("BPM_Trans");
                                         #region 业务表数据插入
                                         bool insertFlag = BusDataToDB(task, json, processData, te);
 
@@ -259,7 +313,6 @@ namespace Supor.Process.Common.Processor
 
                                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | (SecurityProtocolType)0x300 | (SecurityProtocolType)0xC00;
                                         string mes = soap.SendTask(task.CreateUserID.Replace("/", "\\"), workItemId, summary, TaskAPI.ListVars.ToArray(), false, ref procInstId);
-                                        task.ProcInstId = procInstId;
 
                                         if (string.IsNullOrWhiteSpace(mes))
                                         {
@@ -472,7 +525,7 @@ namespace Supor.Process.Common.Processor
 
                                 try
                                 {
-                                    DataCenter dc = new DataCenter("busDB");
+                                    DataCenter dc = new DataCenter("BPM_Trans");
                                     #region 业务表数据插入
                                     bool insertFlag = BusDataToDB(task, json, processData, te);
 
@@ -620,12 +673,12 @@ namespace Supor.Process.Common.Processor
                 throw new Exception("调用 Processor.AutoCreateProcess 方法出错：" + ex);
             }
 
-            return task;
+            return (task, ins, workitem);
         }
 
         public virtual bool BusDataToDB(I_OSYS_PROCDATA_ITEMS task, ProcessDataDto dto, object processData, TaskEntity te)
         {
-            DataCenter dc = new DataCenter("busDB");
+            DataCenter dc = new DataCenter("BPM_Trans");
             return dc.ExecuteNonQuery((tran) =>
             {
                 try
@@ -659,6 +712,8 @@ namespace Supor.Process.Common.Processor
                 }
                 catch (Exception insertex)
                 {
+                    task.IsError = insertex.Message;
+
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | (SecurityProtocolType)0x300 | (SecurityProtocolType)0xC00;
                     soap.SetProcessStall(task.CreateUserID, task.ProcInstId); // 自动取消流程
                     throw insertex;
@@ -668,32 +723,12 @@ namespace Supor.Process.Common.Processor
 
         }
 
-        private I_OSYS_PROCDATA_ITEMS SubmitTaskEntity(TaskDto task, ProcessDataDto json)
+        public virtual string GetTag()
         {
-            var entity = new I_OSYS_PROCDATA_ITEMS()
-            {
-                GUID = Guid.NewGuid().ToString("N"),
-                ProcessName = task.ProcessName,
-                SysSource = task.SourceName,
-                JsonData = json.ToJson(),
-                Status = EnumTaskStatus.Submit,
-                LaunchStatus = EnumLanchStatus.Success,
-                ProcInstId = "0",
-                CreateTime = task.CreateDate.HasValue ? task.CreateDate.Value.ToString() : DateTime.Now.ToString(),
-                CreateUserID = task.CreateUserID,
-                LastUpdateTime = task.CreateDate.HasValue ? task.CreateDate.Value.ToString() : DateTime.Now.ToString(),
-
-            };
-
-
-
-            return entity;
+            return "Base";
         }
 
-        private I_OSYS_PROCDATA_ITEMS UpdateTaskEntity(ProcessDataDto dto)
-        {
-            return null;
-        }
+
 
         /// <summary>
         /// 获取或设置电子表格中变量的值
@@ -729,10 +764,268 @@ namespace Supor.Process.Common.Processor
             }
         }
 
-        public class UserFinder
+
+
+        #region private
+
+        public Dictionary<string, object> ConvertToFormData(TaskDto dto, bool isPublicPerAD)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            var jsonData = dto.ProcessData.ToJson().FromJson<Dictionary<string, object>>();
+            var status = jsonData["Status"].ToString();
+            var sourceName = dto.SourceName;
+            var processName = dto.ProcessName;
+            var key = jsonData["Guid"]?.ToString();
+
+
+            result.Add("SourceName", sourceName);
+            result.Add("CreateUserID", dto.CreateUserID.Replace("\\", "/"));
+            result.Add("Status", status);
+
+
+            //获取流程信息中流程名称和对应的DM_GUID
+            DataTable pmdt = new DMM_processmodelLogic().SelectProcessModelListByProcess(processName);
+
+            if (pmdt != null && pmdt.Rows.Count > 0)
+            {
+                int i = 0;
+                List<DetailModel> _subModel = new List<DetailModel>();
+                foreach (DataRow dr in pmdt.Rows)
+                {
+                    if (dr["MODELCODE"].ToString() != "PROC_ATTACHMENT")
+                    {
+                        if (dr["ISDATALIST"].ToString() == "0") //主表添加头部字段
+                        {
+                            JObject _data = new JObject();
+
+                            foreach (var item in jsonData)
+                            {
+                                if (item.Key.ToUpper() == "SYSTEM_APPLYUSERID")
+                                {
+                                    _data.Add(new JProperty("SYSTEM_APPLYUSERID", jsonData["System_ApplyUserID"].ToString().Replace("\\", "/")));
+                                }
+                                else if (item.Key.ToUpper() == "SYSTEM_APPLYUSERNAME")
+                                {
+                                    _data.Add(new JProperty("SYSTEM_APPLYUSERNAME", item.Value));
+                                }
+                                else if (item.Key.ToLower() != "status")
+                                {
+                                    if (item.Value.GetType().ToString() != "Array")
+                                        _data.Add(new JProperty(item.Key, item.Value));
+                                }
+                            }
+
+                            #region 封装系统字段
+
+                            _data.Add(new JProperty("SYSTEM_PROCESSNAME", processName));
+
+                            if (jsonData["Status"].ToString() == "0")
+                            {
+                                _data.Add(new JProperty("SYSTEM_INCIDENT", "0"));
+                                _data.Add(new JProperty("SYSTEM_APPLYNO", ""));
+                                _data.Add(new JProperty("SYSTEM_APPLYDATE", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+                            }
+                            else
+                            {
+                                var processItemModel = _processItemsService.GetInfobyJsonKeyAndProcessName(key, processName, sourceName);
+                                _data.Add(new JProperty("SYSTEM_INCIDENT", processItemModel.ProcInstId));
+                                _data.Add(new JProperty("SYSTEM_APPLYNO", processItemModel.ProcApplyNo));
+                            }
+                            List<ApplicantInfo> perInfoList = new List<ApplicantInfo>();
+                            if (!isPublicPerAD)
+                            {
+                                perInfoList = _perInfoService.GetUserInfos(jsonData["System_ApplyUserName"].ToString(), jsonData["Sys_UserCode"].ToString(), jsonData["System_ApplyUserID"].ToString().Replace('/', '\\'), jsonData["Sys_PosCode"].ToString(), "", jsonData["Sys_OrgCode"].ToString(), jsonData["Sys_BuCode"].ToString(), sourceName);
+                            }
+                            else
+                            {
+                                perInfoList = _perInfoService.GetUserInfos("", jsonData["Actual_EmpNo"].ToString(), "", "", "", "", "", sourceName);
+                            }
+                            if (perInfoList.Count == 0 && status == "1")
+                            {
+                                if (!isPublicPerAD)
+                                {
+                                    perInfoList = _perInfoService.GetUserInfosIncludedDimission(jsonData["System_ApplyUserName"].ToString(), jsonData["Sys_UserCode"].ToString(), jsonData["System_ApplyUserID"].ToString().Replace('/', '\\'), jsonData["Sys_PosCode"].ToString(), "", jsonData["Sys_OrgCode"].ToString(), jsonData["Sys_BuCode"].ToString(), sourceName);
+                                }
+                                else
+                                {
+                                    perInfoList = _perInfoService.GetUserInfosIncludedDimission("", jsonData["Actual_EmpNo"].ToString(), "", "", "", "", "", sourceName);
+                                }
+                                foreach (ApplicantInfo item in perInfoList)
+                                {
+                                    _data["Sys_PosCode"] = item.Sys_PosCode;
+                                    _data["Sys_BuCode"] = item.Sys_BuCode;
+                                    _data["SYSTEM_APPLYUSERID"] = string.IsNullOrWhiteSpace(item.SYSTEM_APPLYUSERID) ? "" : item.SYSTEM_APPLYUSERID.Replace("\\", "/");
+                                    _data["SYSTEM_APPLYUSERNAME"] = item.SYSTEM_APPLYUSERNAME;
+                                    _data["Sys_UserCode"] = item.Sys_UserCode;
+                                    _data["Sys_OrgCode"] = item.Sys_OrgCode;
+                                }
+                            }
+                            else
+                            {
+                                foreach (ApplicantInfo item in perInfoList)
+                                {
+                                    _data.Add(new JProperty("SYSTEM_APPLYCOMPANY", item.SYSTEM_APPLYCOMPANY));
+                                    _data.Add(new JProperty("SYSTEM_APPLYDEPARTMENT", item.SYSTEM_APPLYDEPARTMENT));
+                                    _data.Add(new JProperty("SYSTEM_APPLYDEPARTMENTID", item.SYSTEM_APPLYDEPARTMENTID));
+                                    _data.Add(new JProperty("SYSTEM_APPLYDEPTLINE", item.SYSTEM_APPLYDEPTLINE));
+                                    _data.Add(new JProperty("SYSTEM_APPLYEMAIL", item.SYSTEM_APPLYEMAIL));
+                                    _data.Add(new JProperty("SYSTEM_APPLYJOBNAME", item.SYSTEM_APPLYJOBNAME));
+                                    _data.Add(new JProperty("SYSTEM_APPLYPHONE", item.SYSTEM_APPLYPHONE));
+                                    _data.Add(new JProperty("SYSTEM_APPLYUSER_MANAGERID", item.SYSTEM_APPLYUSER_MANAGERID));
+                                    _data.Add(new JProperty("SYSTEM_APPLYUSER_SUPERID", item.SYSTEM_APPLYUSER_SUPERID));
+                                    _data.Add(new JProperty("Sys_CompanyCode", item.Sys_CompanyCode));
+                                    _data.Add(new JProperty("Sys_CostCode", item.Sys_CostCode));
+                                    _data.Add(new JProperty("Sys_CostName", item.Sys_CostName));
+                                    _data.Add(new JProperty("Sys_DeptCode", item.Sys_DeptCode));
+                                    _data.Add(new JProperty("Sys_DeptName", item.Sys_DeptName));
+                                    _data.Add(new JProperty("Sys_OrgName", item.Sys_OrgName));
+                                    _data.Add(new JProperty("Sys_ResCenterCode", item.Sys_ResCenterCode));
+                                    _data.Add(new JProperty("Sys_ResCenterName", item.Sys_ResCenterName));
+                                    _data.Add(new JProperty("Sys_IsActive", "1"));
+                                    _data.Add(new JProperty("Sys_AppStatus", "21"));
+                                    _data.Add(new JProperty("SYSTEM_TITLE", "系统自动发起"));
+                                    _data["Sys_PosCode"] = item.Sys_PosCode;
+                                    _data["Sys_BuCode"] = item.Sys_BuCode;
+                                    _data["SYSTEM_APPLYUSERID"] = string.IsNullOrWhiteSpace(item.SYSTEM_APPLYUSERID) ? "" : item.SYSTEM_APPLYUSERID.Replace("\\", "/");
+                                    _data["SYSTEM_APPLYUSERNAME"] = item.SYSTEM_APPLYUSERNAME;
+                                    _data["Sys_UserCode"] = item.Sys_UserCode;
+                                    _data["Sys_OrgCode"] = item.Sys_OrgCode;
+                                }
+                            }
+
+                            #endregion
+
+                            JArray _inserta = JArray.Parse("[" + _data.ToString() + "]");
+                            MainModel _model = new MainModel()
+                            {
+                                TableId = dr["DM_GUID"].ToString(),
+                                TableName = dr["MODELCODE"].ToString(),
+                                Data = _inserta.ToList()
+                            };
+                            List<MainModel> _listModel = new List<MainModel>();
+                            _listModel.Add(_model);
+                            result.Add("main", _listModel);
+                        }
+                        else
+                        {
+                            i = i + 1;
+                            JArray _insert = JArray.Parse(jsonData["Details" + i].ToString());
+                            DetailModel _model = new DetailModel()
+                            {
+                                TableId = dr["DM_GUID"].ToString(),
+                                TableName = dr["MODELCODE"].ToString(),
+                                insert = _insert.ToList()
+                            };
+                            List<DetailModel> _listModel = new List<DetailModel>();
+                            _subModel.Add(_model);
+                            _listModel.Add(_model);
+                            if (i > 1 && _subModel.Count() > 1)
+                            {
+                                _listModel = _subModel;
+                                result.Remove("sub");
+                            }
+                            result.Add("sub", _listModel);
+                        }
+                    }
+                    else
+                    {
+                        JArray _inserta = JArray.Parse(jsonData["AttachmentDetails"].ToString());
+                        DetailModel _model = new DetailModel()
+                        {
+                            TableId = dr["DM_GUID"].ToString(),
+                            TableName = dr["MODELCODE"].ToString(),
+                            insert = _inserta.ToList()
+                        };
+                        List<DetailModel> _listModel = new List<DetailModel>();
+                        _listModel.Add(_model);
+                        result.Add("attachsub", _listModel);
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception("未获取到【" + processName + "】的流程配置相关信息");
+            }
+
+
+            return result;
+        }
+
+        private I_OSYS_PROCDATA_ITEMS Create_I_OSYS_PROCDATA_ITEMS(TaskDto task, ProcessDataDto json)
+        {
+            return new I_OSYS_PROCDATA_ITEMS()
+            {
+                GUID = json.Guid ?? Guid.NewGuid().ToString("N"),
+                ProcessName = task.ProcessName,
+                SysSource = task.SourceName,
+                JsonData = json.ToJson(),
+                Status = EnumTaskStatus.Submit,
+                LaunchStatus = EnumLanchStatus.Success,
+                ProcInstId = "0",
+                CreateTime = task.CreateDate.HasValue ? task.CreateDate.Value.ToString() : DateTime.Now.ToString(),
+                CreateUserID = task.CreateUserID,
+                LastUpdateTime = task.CreateDate.HasValue ? task.CreateDate.Value.ToString() : DateTime.Now.ToString(),
+
+            };
+        }
+
+        private I_OSYS_PROC_INSTS Create_I_OSYS_PROC_INSTS(TaskDto task, ProcessDataDto json)
+        {
+            return new I_OSYS_PROC_INSTS()
+            {
+                PROC_INST_ID = "0",
+                STARTED_DATE = task.CreateDate.HasValue ? task.CreateDate.Value : DateTime.Now
+            };
+        }
+        private I_OSYS_WF_WORKITEMS Create_I_OSYS_WF_WORKITEMS(TaskDto task, ProcessDataDto json)
+        {
+            return new I_OSYS_WF_WORKITEMS()
+            {
+
+            };
+        }
+
+        private async Task<I_OSYS_PROCDATA_ITEMS> Get_I_OSYS_PROCDATA_ITEMS(string guid)
+        {
+            return (await _i_OSYS_PROCDATA_ITEMSRepository.QueryAsync(" and guid=@guid", new { guid })).FirstOrDefault();
+        }
+
+        private async Task<I_OSYS_PROC_INSTS> Get_I_OSYS_PROC_INSTS(string insId)
+        {
+            return (await _i_OSYS_PROC_INSTSRepository.QueryAsync(" and PROC_INST_ID=@PROC_INST_ID", new { PROC_INST_ID = insId })).FirstOrDefault();
+        }
+
+        private async Task<I_OSYS_WF_WORKITEMS> Get_I_OSYS_WF_WORKITEMS(string insId)
+        {
+            return (await _i_OSYS_WF_WORKITEMSRepository.QueryAsync(" and PROC_INST_ID=@PROC_INST_ID", new { PROC_INST_ID = insId })).FirstOrDefault();
+        }
+
+        #endregion
+
+        #region protected model
+
+        protected class UserFinder
         {
             public string Pos_code { get; set; }
             public string AD { get; set; }
         }
+
+        protected class DetailModel
+        {
+
+            public string TableId { get; set; }
+            public string TableName { get; set; }
+            public object insert { get; set; }
+        }
+
+        public class MainModel
+        {
+            public string TableId { get; set; }
+            public string TableName { get; set; }
+            public object Data { get; set; }
+        }
+
+        #endregion
     }
 }

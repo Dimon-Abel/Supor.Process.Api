@@ -7,11 +7,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace Supor.Process.Common.Processor
+namespace Supor.Process.Services.Processor
 {
     public class BaseData
     {
-        BaseDal dal = new BaseDal("busDB");
+        BaseDal dal = new BaseDal("BPM_Trans");
         BaseDal dalAP = new BaseDal("bpmDB");
         BaseDal dalConfig = new BaseDal("dbConnect");
 

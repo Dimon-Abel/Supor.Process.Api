@@ -7,7 +7,7 @@ namespace Supor.Process.Common.SentenceGenerate
 {
     public static class SqlGenerate
     {
-        public static string GenerateSelect<T>() where T: class
+        public static string GenerateSelect<T>() where T : class
         {
             var type = typeof(T);
 
@@ -44,9 +44,9 @@ namespace Supor.Process.Common.SentenceGenerate
             return $"INSERT INTO {tableName} ({columns}) VALUES ({values})";
         }
 
-        public static string GenerateUpdate<T>() where T : class
+        public static string GenerateUpdate<T>(T obj = null) where T : class
         {
-            var type = typeof(T);
+            var type = obj.GetType();
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             var table = type.GetCustomAttribute<TableNameAttribute>();
@@ -57,13 +57,19 @@ namespace Supor.Process.Common.SentenceGenerate
 
             foreach (var prop in properties)
             {
+                object value = null;
+
+                if (obj != null) {
+                    value = prop.GetValue(obj, null);
+                }
+
                 var primaryKey = prop.GetCustomAttribute<PrimaryKeyAttribute>();
 
                 if (primaryKey != null)
                 {
                     whereBuilder.Append($"{primaryKey.Name} = @{prop.Name} AND ");
                 }
-                else if (value != null) // 仅更新非空字段
+                else if (value != null)
                 {
                     setBuilder.Append($"{prop.Name} = @{prop.Name}, ");
                 }

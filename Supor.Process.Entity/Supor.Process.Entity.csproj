@@ -45,9 +45,14 @@
     <Compile Include="Attributies\SqlIgnoreAttribute.cs" />
     <Compile Include="Attributies\TableNameAttribute.cs" />
     <Compile Include="Base\BaseEntity.cs" />
+    <Compile Include="Entity\ApplicantInfo.cs" />
+    <Compile Include="Entity\HandlerPerInfo.cs" />
+    <Compile Include="Entity\IOrgInfo.cs" />
+    <Compile Include="Entity\IOSysProcItems.cs" />
     <Compile Include="Entity\I_OSYS_PROCDATA_ITEMS.cs" />
     <Compile Include="Entity\I_OSYS_PROC_INSTS.cs" />
     <Compile Include="Entity\I_OSYS_WF_WORKITEMS.cs" />
+    <Compile Include="Entity\ProcessConfigData.cs" />
     <Compile Include="Enums\EnumLanchStatus.cs" />
     <Compile Include="Enums\EnumTaskStatus.cs" />
     <Compile Include="InputDto\ProcessDataDto.cs" />

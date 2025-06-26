@@ -12,7 +12,7 @@ namespace Supor.Process.Services.Dapper
     public class DapperExecutor : IDapperExecutor
     {
         /// <inheritdoc />
-        public async Task<IEnumerable<dynamic>> QueryAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<dynamic>> QueryAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -23,7 +23,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -34,7 +34,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<T> QueryFirstAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<T> QueryFirstAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -45,7 +45,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<T> QueryFirstOrDefaultAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<T> QueryFirstOrDefaultAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -56,7 +56,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<T> QuerySingleAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<T> QuerySingleAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -67,7 +67,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -78,7 +78,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<object>> QueryAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<object>> QueryAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -89,7 +89,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<object> QueryFirstAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<object> QueryFirstAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -100,7 +100,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<object> QueryFirstOrDefaultAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<object> QueryFirstOrDefaultAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -111,7 +111,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<object> QuerySingleAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<object> QuerySingleAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -122,7 +122,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<object> QuerySingleOrDefaultAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<object> QuerySingleOrDefaultAsync(Type type, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -133,7 +133,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(string sql, Func<TFirst, TSecond, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(string sql, Func<TFirst, TSecond, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -144,7 +144,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TReturn>(string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TReturn>(string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -155,7 +155,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -166,7 +166,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -177,7 +177,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -188,7 +188,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -199,7 +199,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TReturn>> QueryAsync<TReturn>(string sql, Type[] types, Func<object[], TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName="busDB")
+        public async Task<IEnumerable<TReturn>> QueryAsync<TReturn>(string sql, Type[] types, Func<object[], TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -210,7 +210,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<object> ExecuteScalarAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<object> ExecuteScalarAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -221,7 +221,7 @@ namespace Supor.Process.Services.Dapper
         }
 
         /// <inheritdoc />
-        public async Task<T> ExecuteScalarAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName="busDB")
+        public async Task<T> ExecuteScalarAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -231,7 +231,7 @@ namespace Supor.Process.Services.Dapper
             }
         }
 
-        public async Task<int> ExecuteAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "busDB")
+        public async Task<int> ExecuteAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, string dbName = "BPM_Trans")
         {
             using (var connection = new SqlConnection(GetConnectionString(dbName)))
             {
@@ -241,13 +241,35 @@ namespace Supor.Process.Services.Dapper
             }
         }
 
+        public async Task<bool> ExcuteTranAsync(Action<IDbConnection, IDbTransaction> action, string dbName = "BPM_Trans")
+        {
+            using (var connection = new SqlConnection(GetConnectionString(dbName)))
+            {
+                await connection.OpenAsync();
+                var tran = connection.BeginTransaction();
+
+                try
+                {
+                    action(connection, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw ex;
+                }
+
+                return true;
+            }
+        }
+
 
         /// <summary>
         /// 获取链接字符串
         /// </summary>
         /// <param name="isMaster"></param>
         /// <returns></returns>
-        private string GetConnectionString(string dbName = "busDB")
+        private string GetConnectionString(string dbName = "BPM_Trans")
         {
             return Configer.ConnectionStrings[dbName].ConnectionString;
         }

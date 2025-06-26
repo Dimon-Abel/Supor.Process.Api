@@ -1,0 +1,5 @@
+D:\Supor.Process.Api\Supor.Process.Entity\bin\Debug\Supor.Process.Entity.dll
+D:\Supor.Process.Api\Supor.Process.Entity\bin\Debug\Supor.Process.Entity.pdb
+D:\Supor.Process.Api\Supor.Process.Entity\obj\Debug\Supor.Process.Entity.csproj.CoreCompileInputs.cache
+D:\Supor.Process.Api\Supor.Process.Entity\obj\Debug\Supor.Process.Entity.dll
+D:\Supor.Process.Api\Supor.Process.Entity\obj\Debug\Supor.Process.Entity.pdb

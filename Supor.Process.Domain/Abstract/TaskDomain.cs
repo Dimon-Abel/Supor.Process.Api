@@ -3,14 +3,13 @@ using Supor.Process.Common.Validtors;
 using Supor.Process.Domain.Interfaces;
 using Supor.Process.Entity.InputDto;
 using Supor.Process.Entity.OutDto;
-using Supor.Process.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 using Supor.Process.Common.Extensions;
-using Supor.Process.Common.Processor;
 using System.Collections.Generic;
-using Supor.Process.Entity.Entity;
 using System.Linq;
+using Supor.Process.Services.Processor;
+using Supor.Process.Services;
 
 namespace Supor.Process.Domain.Abstract
 {
@@ -32,75 +31,46 @@ namespace Supor.Process.Domain.Abstract
             _processorFactory = processorFactory;
         }
 
+
         public async Task<TaskOutDto> Send(TaskDto dto)
         {
-            var result = new TaskOutDto();
+            ValidTask(dto);
+            var processor = _processorFactory.GetProcessor(dto.SourceName)
+                ?? throw new Exception("任务处理器未实现");
 
-            // 验证提交数据
-            if (ValidTask(dto))
+            var result = new TaskOutDto { Success = true };
+            var tasks = dto.ProcessData.Select(async item =>
             {
-                List<I_OSYS_PROCDATA_ITEMS> tasks = null;
-                // 任务处理器
-                var processor = _processorFactory.GetProcessor(dto.SourceName);
+                if (!_vaildtor.FieldValid(item, out var msg)) throw new Exception(msg);
+                return await processor.SendTask(dto, item);
+            }).ToList();
 
-                foreach (var item in dto.ProcessData)
-                {
-                    // 验证业务数据
-                    if (!_vaildtor.FieldValid(item, out var message))
-                    {
-                        throw new Exception(message);
-                    }
-
-                    if (processor != null)
-                    {
-                        tasks.Add(processor.SendTask(dto, item));
-                    }
-                    else
-                    {
-                        _logger.Error($"任务处理器未实现。");
-                        throw new Exception("任务处理器未实现。");
-                    }
-                }
-
-                if (tasks.Any())
-                {
-
-                }
+            try
+            {
+                if (await _taskService.AddOrUpdateTaskAsync(await Task.WhenAll(tasks)))
+                    tasks.ForEach(t => result.GuidInsId.Add(t.Result.Item1.GUID, t.Result.Item1.ProcInstId));
             }
-
-            result.Success = true;
-
-            return await Task.FromResult(result);
+            catch (Exception ex)
+            {
+                _logger.Error($"操作失败: {ex.Message}");
+                throw ex;
+            }
+            return result;
         }
 
-        private bool ValidTask(TaskDto dto)
+        private void ValidTask(TaskDto dto)
         {
-            if (dto.ProcessName.IsNullOrWhiteSpace())
+            var checks = new Dictionary<Func<bool>, string>
             {
-                throw new Exception($"流程名称不能为空。");
-            }
+                [() => !dto.ProcessName.IsNullOrWhiteSpace()] = "流程名称不能为空",
+                [() => !dto.SourceName.IsNullOrWhiteSpace()] = "数据来源不能为空",
+                [() => !dto.CreateUserID.IsNullOrWhiteSpace()] = "用户ID不能为空",
+                [() => dto.ProcessData != null] = "流程业务数据不能为空"
+            };
+            foreach (var check in checks.Where(c => !c.Key()))
+                throw new Exception(check.Value);
 
-            if (dto.SourceName.IsNullOrWhiteSpace())
-            {
-                throw new Exception($"数据来源不能为空。");
-            }
-
-            if (dto.CreateUserID.IsNullOrWhiteSpace())
-            {
-                throw new Exception($"用户ID不能为空。");
-            }
-
-            if (dto.ProcessData == null)
-            {
-                throw new Exception($"流程业务数据不能为空");
-            }
-
-            if (!dto.CreateDate.HasValue)
-            {
-                dto.CreateDate = DateTime.Now;
-            }
-
-            return true;
+            dto.CreateDate = dto.CreateDate.HasValue ? dto.CreateDate.Value : DateTime.Now;
         }
     }
 }

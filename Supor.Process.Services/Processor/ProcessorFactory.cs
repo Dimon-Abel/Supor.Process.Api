@@ -1,8 +1,7 @@
-﻿using Supor.Process.Entity.InputDto;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Supor.Process.Common.Processor
+namespace Supor.Process.Services.Processor
 {
     public class ProcessorFactory : IProcessorFactory
     {

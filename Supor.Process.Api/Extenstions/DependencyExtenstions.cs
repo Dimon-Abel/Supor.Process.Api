@@ -15,108 +15,46 @@ namespace Supor.Process.Api
     public static class DependencyExtenstions
     {
         /// <summary>
-        /// Api注入服务
+        /// 注册基础服务
         /// </summary>
         public static void AutofacRegister()
         {
             var builder = new ContainerBuilder();
-
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
-            builder.RegisterDomain();
-            builder.RegisterService();
 
-            builder.RegisterProcesssModule();
+            RegisterBySuffix(builder, "Supor.Process.Domain", "Domain");
+            RegisterBySuffix(builder, "Supor.Process.Services", "Service");
+            RegisterBySuffix(builder, "Supor.Process.Services",
+                new[] { "Validtor", "Processor", "ProcessorFactory" });
+            RegisterBySuffix(builder, "Supor.Process.Services", "Repository");
+            RegisterBySuffix(builder, "Supor.Process.Services", "Executor");
 
-            builder.RegisterDataBase();
+            builder.Register(ctx => new MapperConfiguration(cfg =>
+                cfg.AddProfiles(Assembly.Load("Supor.Process.Common")))
+            ).AsSelf().SingleInstance();
 
-            builder.RegisterLog();
+            builder.Register(c => c.Resolve<MapperConfiguration>().CreateMapper())
+                .As<IMapper>().SingleInstance();
 
-            builder.RegisterMapper();
+            LogManager.Setup().LoadConfigurationFromFile("nlog.config");
+            builder.Register(_ => LogManager.GetCurrentClassLogger())
+                .As<ILogger>().SingleInstance();
 
             var container = builder.Build();
-
             ServiceLocator.SetContainer(container);
             GlobalConfiguration.Configuration.DependencyResolver =
                 new AutofacWebApiDependencyResolver(container);
         }
 
-        /// <summary>
-        /// 注入 Domain
-        /// </summary>
-        /// <param name="builder"></param>
-        private static void RegisterDomain(this ContainerBuilder builder)
+        private static void RegisterBySuffix(
+            ContainerBuilder builder,
+            string assemblyName,
+            params string[] suffixes)
         {
-            var assembly = Assembly.Load("Supor.Process.Domain");
-            builder.RegisterAssemblyTypes(assembly)
-                    .Where(t => t.Name.EndsWith("Domain"))
-                   .AsImplementedInterfaces()
-                   .InstancePerLifetimeScope();
-        }
-
-        /// <summary>
-        /// 注入 Service
-        /// </summary>
-        /// <param name="builder"></param>
-        private static void RegisterService(this ContainerBuilder builder)
-        {
-            var assembly = Assembly.Load("Supor.Process.Services");
-            builder.RegisterAssemblyTypes(assembly)
-                    .Where(t => t.Name.EndsWith("Service"))
-                   .AsImplementedInterfaces()
-                   .InstancePerLifetimeScope();
-        }
-
-        /// <summary>
-        /// 注入 AutoMapper
-        /// </summary>
-        /// <param name="builder"></param>
-        private static void RegisterMapper(this ContainerBuilder builder)
-        {
-            var assembly = Assembly.Load("Supor.Process.Common");
-            builder.Register(ctx =>
-            {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfiles(assembly);
-                });
-
-                return config.CreateMapper();
-            }).As<IMapper>().SingleInstance();
-        }
-
-        /// <summary>
-        /// 注入流程校验器、流程处理器
-        /// </summary>
-        /// <param name="builder"></param>
-        private static void RegisterProcesssModule(this ContainerBuilder builder)
-        {
-            var assembly = Assembly.Load("Supor.Process.Common");
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(x => (x.Name.EndsWith("Validtor") || x.Name.EndsWith("Processor") || x.Name.EndsWith("ProcessorFactory")) && !x.IsAbstract)
+            builder.RegisterAssemblyTypes(Assembly.Load(assemblyName))
+                .Where(t => suffixes.Any(s => t.Name.EndsWith(s)) && !t.IsAbstract)
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-        }
-
-        private static void RegisterDataBase(this ContainerBuilder builder)
-        {
-            var assembly = Assembly.Load("Supor.Process.Services");
-            builder.RegisterAssemblyTypes(assembly)
-               .Where(x => x.Name.EndsWith("Executor") && !x.IsAbstract)
-               .AsImplementedInterfaces()
-               .InstancePerLifetimeScope();
-        }
-
-        /// <summary>
-        /// 注入 Log
-        /// </summary>
-        /// <param name="builder"></param>
-        private static void RegisterLog(this ContainerBuilder builder)
-        {
-            LogManager.Setup().LoadConfigurationFromFile("nlog.config");
-
-            builder.Register(x => LogManager.GetCurrentClassLogger())
-            .As<ILogger>()
-            .SingleInstance();
         }
     }
 }

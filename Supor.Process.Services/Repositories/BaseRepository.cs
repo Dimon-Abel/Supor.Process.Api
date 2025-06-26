@@ -1,8 +1,9 @@
 ﻿using Supor.Process.Common.SentenceGenerate;
 using Supor.Process.Services.Dapper;
-using Supor.Process.Services.Interfaces;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace Supor.Process.Services.Repositories
 {
@@ -34,6 +35,16 @@ namespace Supor.Process.Services.Repositories
         public virtual async Task<bool> UpdateAsync(params T[] update)
         {
             return (await _dapperExecutor.ExecuteAsync(_updateSql, update)) > 0;
+        }
+
+        public virtual async Task<int> InsertTranAsync(IDbConnection connection, IDbTransaction transaction, params T[] insert)
+        {
+            return await connection.ExecuteAsync(_insertSql, insert, transaction);
+        }
+
+        public virtual async Task<int> UpdateTranAsync(IDbConnection connection, IDbTransaction transaction, params T[] update)
+        {
+            return await connection.ExecuteAsync(_updateSql, update, transaction);
         }
     }
 }

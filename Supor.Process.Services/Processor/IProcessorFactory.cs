@@ -1,4 +1,4 @@
-﻿namespace Supor.Process.Common.Processor
+﻿namespace Supor.Process.Services.Processor
 {
     public interface IProcessorFactory
     {

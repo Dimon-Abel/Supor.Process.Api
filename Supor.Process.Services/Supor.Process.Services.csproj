@@ -31,19 +31,35 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Client.Library">
+      <HintPath>..\Supor.Process.Common\RefDLL\Client.Library.dll</HintPath>
+    </Reference>
     <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Supor.Process.Api\packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="DMM.Library">
+      <HintPath>..\Supor.Process.Common\RefDLL\DMM.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="Entity.Library">
+      <HintPath>..\Supor.Process.Common\RefDLL\Entity.Library.dll</HintPath>
     </Reference>
     <Reference Include="KFLibrary">
       <HintPath>..\Supor.Process.Common\RefDLL\KFLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\Supor.Process.Api\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\Supor.Process.Api\packages\NLog.5.5.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Supor.Utility">
+      <HintPath>..\Supor.Process.Common\RefDLL\Supor.Utility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\Supor.Process.Api\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -57,11 +73,36 @@
   <ItemGroup>
     <Compile Include="Dapper\DapperExecutor.cs" />
     <Compile Include="Dapper\IDapperExecutor.cs" />
-    <Compile Include="Interfaces\IRepository.cs" />
-    <Compile Include="Interfaces\ITaskService.cs" />
+    <Compile Include="Services\Interfaces\IRepository.cs" />
+    <Compile Include="Services\Interfaces\ITaskService.cs" />
+    <Compile Include="Processor\BaseData.cs" />
+    <Compile Include="Processor\BaseProcessor.cs" />
+    <Compile Include="Processor\BPMProcessor.cs" />
+    <Compile Include="Processor\IProcessor.cs" />
+    <Compile Include="Processor\IProcessorFactory.cs" />
+    <Compile Include="Processor\ProcessorFactory.cs" />
+    <Compile Include="Processor\SECProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BaseRepository.cs" />
-    <Compile Include="Repositories\TaskRepository.cs" />
+    <Compile Include="Repositories\BaseSuporRepository.cs" />
+    <Compile Include="Repositories\Interfaces\II_OSYS_PROCDATA_ITEMSRepository.cs" />
+    <Compile Include="Repositories\Interfaces\II_OSYS_PROC_INSTSRepository.cs" />
+    <Compile Include="Repositories\Interfaces\II_OSYS_WF_WORKITEMSRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IOrgInfoRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IPerInfoRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IProcessItemsRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IRepositoryBase.cs" />
+    <Compile Include="Repositories\I_OSYS_PROCDATA_ITEMSRepository.cs" />
+    <Compile Include="Repositories\I_OSYS_PROC_INSTSRepository.cs" />
+    <Compile Include="Repositories\I_OSYS_WF_WORKITEMSRepository.cs" />
+    <Compile Include="Repositories\PerInfoRepository.cs" />
+    <Compile Include="Repositories\ProcessItemsRepository.cs" />
+    <Compile Include="Services\Interfaces\IOrgInfoService.cs" />
+    <Compile Include="Services\Interfaces\IPerInfoService.cs" />
+    <Compile Include="Services\Interfaces\IProcessItemsService.cs" />
+    <Compile Include="Services\OrgInfoService.cs" />
+    <Compile Include="Services\PerInfoService.cs" />
+    <Compile Include="Services\ProcessItemsService.cs" />
     <Compile Include="Services\TaskService.cs" />
   </ItemGroup>
   <ItemGroup>

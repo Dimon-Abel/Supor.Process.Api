@@ -11,6 +11,9 @@ namespace Supor.Process.Entity.Entity
         [PrimaryKey]
         public string PROC_INST_ID { get; set; }
         public string PROC_APPLYNO { get; set; }
+        /// <summary>
+        /// 摘要
+        /// </summary>
         public string PROC_INST_NAME { get; set; }
         public string DEF_ID { get; set; }
         public string DEF_NAME { get; set; }
