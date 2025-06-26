@@ -376,7 +376,7 @@ namespace Supor.Process.Services.Processor
 
                     #region 填充数据
 
-                    var mainData = (formData["main"] as object[]).FirstOrDefault() as Dictionary<string, object>();
+                    var mainData = (formData["main"] as object[]).FirstOrDefault() as Dictionary<string, object>;
 
 
                     task.GUID = json.Guid;
@@ -796,9 +796,6 @@ namespace Supor.Process.Services.Processor
                     }
                     else
                         throw new Exception("终止流程失败，未获取到激活的任务信息！--关联信息：" + summary + "___" + procInstId);
-
-                   
-
                 }
 
             }
