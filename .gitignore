@@ -28,3 +28,9 @@
 /Supor.Process.Services/bin
 /Supor.Process.Services/obj
 /Supor.Process.Services/packages
+/Supor.Process.Api/.vs
+/Supor.Process.Common/.vs
+/.vs/Supor.Process.Api/v17
+/Supor.Process.Domain/.vs
+/Supor.Process.Entity/.vs
+/Supor.Process.Services/.vs
