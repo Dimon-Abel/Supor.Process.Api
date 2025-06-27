@@ -17,7 +17,7 @@ namespace Supor.Process.Api
             var thisAssembly = typeof(SwaggerConfig).Assembly;
 
             GlobalConfiguration.Configuration
-                .EnableSwagger(c =>
+                .EnableSwagger("supor/swagger/docs/{apiVersion}", c =>
                     {
                         // By default, the service root url is inferred from the request used to access the docs.
                         // However, there may be situations (e.g. proxy and load-balanced environments) where this does not
@@ -180,7 +180,7 @@ namespace Supor.Process.Api
                         //
                         //c.CustomProvider((defaultProvider) => new CachingSwaggerProvider(defaultProvider));
                     })
-                .EnableSwaggerUi(c =>
+                .EnableSwaggerUi("supor/swagger/ui/{*assetPath}", c =>
                     {
                         // Use the "DocumentTitle" option to change the Document title.
                         // Very helpful when you have multiple Swagger pages open, to tell them apart.
