@@ -31,8 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\Supor.Process.Api\packages\Autofac.4.0.0\lib\netstandard1.1\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\Supor.Process.Api\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\Supor.Process.Api\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,10 +54,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ApiUris.cs" />
+    <Compile Include="Entity\ESignApiResult.cs" />
+    <Compile Include="Entity\HttpRespResult.cs" />
+    <Compile Include="Entity\HttpType.cs" />
+    <Compile Include="Entity\Request\CreateByFileRequest.cs" />
+    <Compile Include="Entity\Request\FileUploadUrlRequest.cs" />
+    <Compile Include="Entity\Request\KeywordRequest.cs" />
+    <Compile Include="Entity\Request\SignUrlRequest.cs" />
+    <Compile Include="Entity\Result\CreateByFile.cs" />
+    <Compile Include="Entity\Result\FileUploadStatus.cs" />
+    <Compile Include="Entity\Result\FileUploadUrl.cs" />
+    <Compile Include="Entity\Result\OrgIdentity.cs" />
+    <Compile Include="Entity\Result\PersonIdentity.cs" />
+    <Compile Include="Entity\Result\QueryKeyWord.cs" />
+    <Compile Include="Entity\Result\SignUrl.cs" />
+    <Compile Include="ESignExtenstions.cs" />
+    <Compile Include="Helper\CryptoHelper.cs" />
+    <Compile Include="Helper\FileHelper.cs" />
+    <Compile Include="Helper\HttpHelper.cs" />
+    <Compile Include="Helper\TimestampHelper.cs" />
+    <Compile Include="Options\ESignOption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ESignApiProxy.cs" />
+    <Compile Include="Services\ESignService.cs" />
+    <Compile Include="Services\Interfaces\IESignApiProxy.cs" />
+    <Compile Include="Services\Interfaces\IESignService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Entity\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

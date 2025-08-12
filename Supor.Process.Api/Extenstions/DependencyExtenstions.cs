@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Integration.WebApi;
 using AutoMapper;
+using ESign;
 using NLog;
 using Supor.Process.Common;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace Supor.Process.Api
             builder.RegisterLog();
 
             builder.RegisterMapper();
+
+            builder.AutoFac_RegisterESign();
 
             var container = builder.Build();
 

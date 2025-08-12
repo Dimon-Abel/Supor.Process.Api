@@ -1,4 +1,7 @@
-﻿using NLog;
+﻿using ESign.Entity.Result;
+using ESign.Services;
+using ESign.Services.Interfaces;
+using NLog;
 using Supor.Process.Common.Extensions;
 using Supor.Process.Domain.Interfaces;
 using Supor.Process.Entity.Entity;
@@ -15,17 +18,21 @@ namespace Supor.Process.Api.Controllers.Api
     {
         private readonly ILogger _logger;
         private readonly ITaskDomain _taskDomain;
+        private readonly IESignService _eSignService;
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="taskDomain"></param>
-        public TaskController(ILogger logger, ITaskDomain taskDomain)
+        public TaskController(ILogger logger, ITaskDomain taskDomain, IESignService eSignService)
         {
             _logger = logger;
             _taskDomain = taskDomain;
+            _eSignService = eSignService;
         }
+
 
         /// <summary>
         /// 提交任务
@@ -50,20 +57,14 @@ namespace Supor.Process.Api.Controllers.Api
         /// <summary>
         /// 测试异常写入
         /// </summary>
-        /// <param name="a"></param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("api/Task/Test")]
-        public async Task<string> Test(string a)
+        public async Task<SignUrl> Test(string fileName)
         {
-            _logger.Error($"测试异常写入");
-
-            if (!string.IsNullOrWhiteSpace(a))
-            {
-                throw new System.Exception("123123");
-            }
-
-            return await Task.FromResult(a);
+            var result = await _eSignService.Send(fileName);
+            return await Task.FromResult(result);
         }
     }
 }
