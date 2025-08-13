@@ -79,17 +79,17 @@ namespace ESign.Services
         /// <exception cref="Exception"></exception>
         public async Task<ESignApiResult<FileUploadUrl>> FileUpload(string fileName)
         {
-            var filePath = Path.Combine(_option.UploadFile, fileName);
-            if (!File.Exists(filePath)) return null;
+            var filePath = fileName.StartsWith("http") ? fileName : Path.Combine(_option.UploadFile, fileName);
+            if (!fileName.StartsWith("http") && !File.Exists(filePath)) throw new Exception("文件不存在");
 
-            var fileInfo = new FileInfo(filePath);
+            var extension = fileName.StartsWith("http") ? Path.GetExtension(fileName) : fileName.Split('.')[1];
             var request = new FileUploadUrlRequest
             {
-                contentMd5 = FileHelper.GetFileContentMD5(filePath),
+                contentMd5 = FileHelper.GetFileContentMD5(filePath,out var length),
                 contentType = "application/octet-stream",
-                fileName = fileName,
-                convertToPDF = !fileInfo.Extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase),
-                fileSize = (int)fileInfo.Length
+                fileName = fileName.StartsWith("http") ? Path.GetFileName(fileName) : fileName,
+                convertToPDF = !extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase),
+                fileSize = length
             };
 
             try
@@ -167,6 +167,8 @@ namespace ESign.Services
         /// <returns></returns>
         public async Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, QueryKeyWord queryKeyWord)
         {
+        
+
             var signFields = queryKeyWord.keywordPositions
                 .SelectMany(k => k.positions)
                 .SelectMany(p => p.coordinates.Select(pos => new SignField
@@ -183,6 +185,22 @@ namespace ESign.Services
                     }
                 }))
                 .ToList();
+
+            if (signFields.Count == 0) {
+                signFields.Add(new SignField()
+                {
+                    fileId = fileId,
+                    normalSignFieldConfig = new NormalSignFieldConfig
+                    {
+                        signFieldPosition = new SignFieldPosition
+                        {
+                            positionPage = "1",
+                            positionX = 1,
+                            positionY = 1
+                        }
+                    }
+                });
+            }
 
             var endpoint = ApiUris.Create_By_File;
 
@@ -210,7 +228,7 @@ namespace ESign.Services
             var jsonParam = JsonConvert.SerializeObject(request);
             var headers = HttpHelper.SignAndBuildSignAndJsonHeader(_option.AppId, _option.AppSecret, jsonParam, HttpType.POST, endpoint);
 
-            var response = await ExecuteHttpRequestAsync( $"{_option.ESignUrl}{endpoint}", HttpType.POST, jsonParam, headers);
+            var response = await ExecuteHttpRequestAsync($"{_option.ESignUrl}{endpoint}", HttpType.POST, jsonParam, headers);
 
             return response.GetResult<ESignApiResult<CreateByFile>>();
         }
@@ -280,37 +298,54 @@ namespace ESign.Services
         /// <returns></returns>
         private static async Task<HttpRespResult> UploadFileAsync(string url, string filePath, Dictionary<string, string> headers, string contentType = "application/octet-stream")
         {
+            Stream fileStream = null;
+
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    using (var fileStream = File.OpenRead(filePath))
+
+
+                    if (filePath.StartsWith("http"))
                     {
-                        using (var content = new StreamContent(fileStream))
+                        fileStream = new MemoryStream(FileHelper.GetRemoteFileBinary(filePath));
+                    }
+                    else
+                    {
+                        fileStream = File.OpenRead(filePath);
+                    }
+
+                    using (var content = new StreamContent(fileStream))
+                    {
+                        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                        foreach (var header in headers)
                         {
-                            content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-                            foreach (var header in headers)
-                            {
-                                content.Headers.Add(header.Key, header.Value);
-                            }
-
-                            var response = await httpClient.PutAsync(url, content);
-                            var responseContent = await response.Content.ReadAsStringAsync();
-
-                            return new HttpRespResult
-                            {
-                                IsNetworkSuccess = response.IsSuccessStatusCode,
-                                HttpStatusCode = (int)response.StatusCode,
-                                RespData = responseContent,
-                                NetworkMsg = response.ReasonPhrase
-                            };
+                            content.Headers.Add(header.Key, header.Value);
                         }
+
+                        var response = await httpClient.PutAsync(url, content);
+                        var responseContent = await response.Content.ReadAsStringAsync();
+
+                        return new HttpRespResult
+                        {
+                            IsNetworkSuccess = response.IsSuccessStatusCode,
+                            HttpStatusCode = (int)response.StatusCode,
+                            RespData = responseContent,
+                            NetworkMsg = response.ReasonPhrase
+                        };
                     }
                 }
             }
             catch (HttpRequestException ex)
             {
                 return HandleHttpException(ex);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Dispose();
+                }
             }
         }
         /// <summary>
