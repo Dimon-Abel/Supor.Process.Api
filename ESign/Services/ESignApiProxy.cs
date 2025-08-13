@@ -163,10 +163,9 @@ namespace ESign.Services
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="signFlowTitle"></param>
-        /// <param name="identityInfo"></param>
         /// <param name="queryKeyWord"></param>
         /// <returns></returns>
-        public async Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, OrgIdentity identityInfo, QueryKeyWord queryKeyWord)
+        public async Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, QueryKeyWord queryKeyWord)
         {
             var signFields = queryKeyWord.keywordPositions
                 .SelectMany(k => k.positions)
@@ -190,7 +189,7 @@ namespace ESign.Services
             var request = new CreateByFileRequest
             {
                 docs = new List<Doc> { new Doc() { fileId = fileId } },
-                signFlowConfig = new SignFlowConfig { signFlowTitle = signFlowTitle },
+                signFlowConfig = new SignFlowConfig { signFlowTitle = signFlowTitle, autoStart = true, autoFinish = true },
                 signFlowInitiator = null,
                 signers = new List<Signer>
                 {
@@ -238,6 +237,18 @@ namespace ESign.Services
             var response = await ExecuteHttpRequestAsync(apiUrl, HttpType.POST, jsonParam, headers);
 
             return response.GetResult<ESignApiResult<SignUrl>>();
+        }
+
+        public async Task<ESignApiResult<FileDownLoad>> GetDownLoadFile(string signFlowId)
+        {
+            string endpoint = $"/v3/sign-flow/{signFlowId}/file-download-url";
+            var apiUrl = $"{_option.ESignUrl}{endpoint}";
+
+            var headers = HttpHelper.SignAndBuildSignAndJsonHeader(_option.AppId, _option.AppSecret, null, HttpType.GET, endpoint);
+
+            var response = await ExecuteHttpRequestAsync(apiUrl, HttpType.GET, null, headers);
+
+            return response.GetResult<ESignApiResult<FileDownLoad>>();
         }
 
         #region private methods

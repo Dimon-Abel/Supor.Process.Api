@@ -1,4 +1,5 @@
-﻿using ESign.Entity.Result;
+﻿using ESign.Entity;
+using ESign.Entity.Result;
 using ESign.Services;
 using ESign.Services.Interfaces;
 using NLog;
@@ -65,6 +66,25 @@ namespace Supor.Process.Api.Controllers.Api
         {
             var result = await _eSignService.Send(fileName);
             return await Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// 回调接口
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/Task/Callback")]
+        public async Task Callback(SignCallbackRequest request)
+        {
+            //action固定为：SIGN_FLOW_COMPLETE，此类型当整个签署流程完结，触发该类型的回调通知
+            if (request != null && request.action == "SIGN_FLOW_COMPLETE")
+            {
+                if (request.signFlowStatus == SignFlowStatus.Complete)
+                {
+                    await _eSignService.Callback(request.signFlowId);
+                }
+            }
         }
     }
 }

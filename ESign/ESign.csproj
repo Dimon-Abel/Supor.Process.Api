@@ -63,12 +63,14 @@
     <Compile Include="Entity\Request\KeywordRequest.cs" />
     <Compile Include="Entity\Request\SignUrlRequest.cs" />
     <Compile Include="Entity\Result\CreateByFile.cs" />
+    <Compile Include="Entity\Result\FileDownLoad.cs" />
     <Compile Include="Entity\Result\FileUploadStatus.cs" />
     <Compile Include="Entity\Result\FileUploadUrl.cs" />
     <Compile Include="Entity\Result\OrgIdentity.cs" />
     <Compile Include="Entity\Result\PersonIdentity.cs" />
     <Compile Include="Entity\Result\QueryKeyWord.cs" />
     <Compile Include="Entity\Result\SignUrl.cs" />
+    <Compile Include="Entity\SignCallbackRequest.cs" />
     <Compile Include="ESignExtenstions.cs" />
     <Compile Include="Helper\CryptoHelper.cs" />
     <Compile Include="Helper\FileHelper.cs" />

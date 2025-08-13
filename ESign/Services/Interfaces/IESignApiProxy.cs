@@ -40,7 +40,14 @@ namespace ESign.Services
         /// <param name="identityInfo"></param>
         /// <param name="queryKeyWord"></param>
         /// <returns></returns>
-        Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, OrgIdentity identityInfo, QueryKeyWord queryKeyWord);
+        Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, QueryKeyWord queryKeyWord);
+
+        /// <summary>
+        /// 获取下载签署文件
+        /// </summary>
+        /// <param name="signFlowId"></param>
+        /// <returns></returns>
+        Task<ESignApiResult<FileDownLoad>> GetDownLoadFile(string signFlowId);
 
         /// <summary>
         /// 获取签署页面链接
