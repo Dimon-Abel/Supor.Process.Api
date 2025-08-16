@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,11 +27,6 @@ namespace ESign.Services
         public async Task<SignUrl> Send(SendRequest request)
         {
 
-            var attList = await _attach.GetProcAttInfo(request.guid);
-            //var contractInfo = attList.OrderBy(x => x.SYSTEM_ROWNUM).FirstOrDefault().EXT06;//合同文件
-            //var attInfo = attList.Where(x => x.EXT06 != contractInfo).Select(x => x.EXT06);//附件
-            var contractInfo = attList.Select(x => x.EXT06);//合同文件
-            var attInfo = attList.Select(x => x.EXT06);//附件
             using (var cts = new CancellationTokenSource())
             {
                 var identityInfo = await _proxy.GetOrganizationIdentityInfo();
@@ -42,18 +36,18 @@ namespace ESign.Services
                 var host = _option.UploadUrl;
 
                 var conFieldIds = new List<string>();
-                foreach (var item in contractInfo)
+                foreach (var item in request.Docs)
                 {
-                    var resp = await _proxy.FileUpload($"{host}{item}");
+                    var resp = await _proxy.FileUpload(item);
                     if (resp.Code != 0)
                         throw new Exception(resp.Message);
                     conFieldIds.Add(resp.Data.fileId);
                 }
 
                 var fieldIDs = new List<string>();
-                foreach (var item in attInfo)
+                foreach (var item in request.Attachments)
                 {
-                    var attresp = await _proxy.FileUpload($"{host}{item}");
+                    var attresp = await _proxy.FileUpload(item);
                     if (attresp.Code != 0)
                         throw new Exception(attresp.Message);
                     fieldIDs.Add(attresp.Data.fileId);
@@ -116,7 +110,7 @@ namespace ESign.Services
         private async Task<SignUrl> PollForSignUrlAsync(List<string> conFieldIds, List<string> fileIds, string title, CancellationToken token)
         {
             var statusMap = conFieldIds.Union(fileIds).ToDictionary(id => id, _ => 0);
-
+            int count = 0;
             while (!token.IsCancellationRequested)
             {
                 foreach (var fileId in statusMap.Keys.ToList())
@@ -139,6 +133,11 @@ namespace ESign.Services
                     return (await _proxy.GetSignUrl(created.Data.signFlowId)).Data;
                 }
 
+                count++;
+                if (count > 10)
+                {
+                    throw new Exception("文件上传失败");
+                }
                 await Task.Delay(1000, token);
             }
             throw new OperationCanceledException();

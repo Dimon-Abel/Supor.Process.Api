@@ -8,8 +8,12 @@ using Supor.Process.Common.Extensions;
 using Supor.Process.Domain.Interfaces;
 using Supor.Process.Entity.Entity;
 using Supor.Process.Entity.InputDto;
+using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using WebGrease.Activities;
 
 namespace Supor.Process.Api.Controllers.Api
 {
@@ -66,6 +70,7 @@ namespace Supor.Process.Api.Controllers.Api
         public async Task<SignUrl> Test(SendRequest  request)
         {
             var result = await _eSignService.Send(request);
+
             return await Task.FromResult(result);
         }
 

@@ -51,6 +51,12 @@ namespace ESign.Services
             }
         }
 
+        /// <summary>
+        /// 查询个人信息认证
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task<ESignApiResult<PersonIdentity>> GetPersonIdentityInfo(string account)
         {
             const string endpoint = "/v3/persons/identity-info";
@@ -68,6 +74,54 @@ namespace ESign.Services
             catch (Exception ex)
             {
                 throw new Exception($"查询个人认证信息: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<ESignApiResult<FileUploadUrl>> FileUpload(FileInformation file)
+        {
+            var extension = Path.GetExtension(file.Name);
+            var request = new FileUploadUrlRequest
+            {
+                contentMd5 = FileHelper.GetFileContentMD5(file.FileBytes, out var length),
+                contentType = "application/octet-stream",
+                fileName = file.Name,
+                convertToPDF = !extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase),
+                fileSize = length
+            };
+
+            try
+            {
+                // 获取上传URL
+                var uploadUrlResult = await GetFileUploadUrlAsync(request);
+                if (uploadUrlResult.Code != 0)
+                    throw new Exception(uploadUrlResult.Message);
+
+
+                //var td = FileHelper.GetFileContentMD5("D:\\Code\\doc\\e签宝调用接口清单.xlsx", out var l);
+                //var uploadResult = await UploadFileAsync(
+                //    uploadUrlResult.Data.fileUploadUrl,
+                //    "D:\\Code\\doc\\e签宝调用接口清单.xlsx",
+                //    new Dictionary<string, string> { ["Content-MD5"] = request.contentMd5 });
+
+                // 实际上传文件
+                var uploadResult = await UploadFileAsync(
+                    uploadUrlResult.Data.fileUploadUrl,
+                    file.FileBytes,
+                    new Dictionary<string, string> { ["Content-MD5"] = request.contentMd5 });
+
+                return uploadResult.HttpStatusCode == 200
+                    ? uploadUrlResult
+                    : throw new Exception(uploadResult.HttpStatusCodeMsg);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"文件上传失败: {ex.Message}");
             }
         }
 
@@ -167,8 +221,6 @@ namespace ESign.Services
         /// <returns></returns>
         public async Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string, QueryKeyWord> queryKeyWord)
         {
-
-
             var conFieldIdSet = new HashSet<string>(conFieldIds);
 
             var signFields = queryKeyWord
@@ -266,6 +318,11 @@ namespace ESign.Services
             return response.GetResult<ESignApiResult<SignUrl>>();
         }
 
+        /// <summary>
+        /// 获取下载文件路径
+        /// </summary>
+        /// <param name="signFlowId"></param>
+        /// <returns></returns>
         public async Task<ESignApiResult<FileDownLoad>> GetDownLoadFile(string signFlowId)
         {
             string endpoint = $"/v3/sign-flow/{signFlowId}/file-download-url";
@@ -297,6 +354,50 @@ namespace ESign.Services
                 ? JsonConvert.DeserializeObject<ESignApiResult<FileUploadUrl>>(response.RespData.ToString())
                 : throw new Exception(response.HttpStatusCodeMsg);
         }
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="filePath"></param>
+        /// <param name="headers"></param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        private static async Task<HttpRespResult> UploadFileAsync(string url, byte[] fileByte, Dictionary<string, string> headers, string contentType = "application/octet-stream")
+        {
+            Stream fileStream = new MemoryStream(fileByte);
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    using (var content = new StreamContent(fileStream))
+                    {
+                        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                        foreach (var header in headers)
+                        {
+                            content.Headers.Add(header.Key, header.Value);
+                        }
+
+                        var response = await httpClient.PutAsync(url, content);
+                        var responseContent = await response.Content.ReadAsStringAsync();
+
+                        return new HttpRespResult
+                        {
+                            IsNetworkSuccess = response.IsSuccessStatusCode,
+                            HttpStatusCode = (int)response.StatusCode,
+                            RespData = responseContent,
+                            NetworkMsg = response.ReasonPhrase
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// 上传文件
         /// </summary>

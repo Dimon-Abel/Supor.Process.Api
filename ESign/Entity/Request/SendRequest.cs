@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESign.Entity.Request
 {
     public class SendRequest
     {
         public string title { get; set; } = "签署文件";
-        public string guid { get; set; }
-        //public List<string> DocNames { get; set; }
 
-        //public List<string> Attachments { get; set; }
+        public List<FileInformation> Docs { get; set; }
 
-        //public SendRequest() { 
-        
-        //    DocNames = new List<string>();
-        //    Attachments = new List<string>();
-        //}
+        public List<FileInformation> Attachments { get; set; }
+    }
+
+    public class FileInformation
+    {
+        /// <summary>
+        /// 文件名称
+        /// </summary>
+        public string Name {  get; set; }
+
+        /// <summary>
+        /// 文件流
+        /// </summary>
+        public byte[] FileBytes { get; set; }
     }
 }

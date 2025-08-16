@@ -1,0 +1,102 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "ESign/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/ESign.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ESign.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ESign/1.0.0": {
+      "type": "project",
+      "path": "../ESign/ESign.csproj",
+      "msbuildProject": "../ESign/ESign.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "ESign >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Mayn\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\Code\\Test\\Test.csproj",
+      "projectName": "Test",
+      "projectPath": "D:\\Code\\Test\\Test.csproj",
+      "packagesPath": "C:\\Users\\Mayn\\.nuget\\packages\\",
+      "outputPath": "D:\\Code\\Test\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Mayn\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://nuget.31huiyi.com/repository/nuget-group/": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "D:\\Code\\ESign\\ESign.csproj": {
+              "projectPath": "D:\\Code\\ESign\\ESign.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.200"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

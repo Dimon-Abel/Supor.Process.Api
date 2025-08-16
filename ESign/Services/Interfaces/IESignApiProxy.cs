@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ESign.Entity;
+using ESign.Entity.Request;
 using ESign.Entity.Result;
 
 namespace ESign.Services
@@ -19,6 +19,13 @@ namespace ESign.Services
         /// <param name="fileName"></param>
         /// <returns></returns>
         Task<ESignApiResult<FileUploadUrl>> FileUpload(string fileName);
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        Task<ESignApiResult<FileUploadUrl>> FileUpload(FileInformation file);
 
         /// <summary>
         /// 查询文件上传状态
