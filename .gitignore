@@ -3,6 +3,8 @@
 ################################################################################
 
 /.vs/Code/v17
+/ESign/obj/Debug
+/Test/obj/Debug
 /Supor.Process.Common/obj/Debug
 /Supor.Process.Domain/obj/Debug
 /Supor.Process.Entity/obj/Debug
@@ -11,6 +13,10 @@
 /Supor.Process.Api/obj/Debug
 /Supor.Process.Common/bin/Debug
 /Supor.Process.Services/bin/Debug
+/ESign/bin/Debug
+/Test/bin/Debug
+/ESign/bin
+/Test/bin
 /Supor.Process.Common/bin
 /Supor.Process.Domain/bin
 /Supor.Process.Entity/bin
