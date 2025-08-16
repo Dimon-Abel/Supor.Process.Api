@@ -28,6 +28,8 @@
         public string ESignOrgName { get; set; }
 
         public string UploadFile { get; set; }
+
+        public string UploadUrl { get; set; }
         public string Keyword {  get; set; }
 
         public string PsnAccount { get; set; }

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ESign.Entity;
 using ESign.Entity.Result;
 
@@ -40,7 +42,7 @@ namespace ESign.Services
         /// <param name="identityInfo"></param>
         /// <param name="queryKeyWord"></param>
         /// <returns></returns>
-        Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, QueryKeyWord queryKeyWord);
+        Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string,QueryKeyWord>  queryKeyWord);
 
         /// <summary>
         /// 获取下载签署文件

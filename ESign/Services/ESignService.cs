@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using ESign.Entity.Request;
 using ESign.Entity.Result;
 using ESign.Options;
 using ESign.Services.Interfaces;
@@ -13,24 +17,49 @@ namespace ESign.Services
     {
         private readonly IESignApiProxy _proxy;
         private readonly ESignOption _option;
-        public ESignService(IESignApiProxy proxy, ESignOption option)
+        private readonly IAttachmentService _attach;
+        public ESignService(IESignApiProxy proxy, ESignOption option, IAttachmentService attach)
         {
             _proxy = proxy;
             _option = option;
+            _attach = attach;
         }
-        public async Task<SignUrl> Send(string fileName, string title = "签署文件")
+
+        public async Task<SignUrl> Send(SendRequest request)
         {
+
+            var attList = await _attach.GetProcAttInfo(request.guid);
+            //var contractInfo = attList.OrderBy(x => x.SYSTEM_ROWNUM).FirstOrDefault().EXT06;//合同文件
+            //var attInfo = attList.Where(x => x.EXT06 != contractInfo).Select(x => x.EXT06);//附件
+            var contractInfo = attList.Select(x => x.EXT06);//合同文件
+            var attInfo = attList.Select(x => x.EXT06);//附件
             using (var cts = new CancellationTokenSource())
             {
                 var identityInfo = await _proxy.GetOrganizationIdentityInfo();
                 if (identityInfo?.Code != 0)
                     throw new Exception("机构授权验证失败");
 
-                var uploadInfo = await _proxy.FileUpload(fileName);
-                if (uploadInfo.Code != 0)
-                    throw new Exception(uploadInfo.Message);
+                var host = _option.UploadUrl;
 
-                return await PollForSignUrlAsync(uploadInfo.Data.fileId, title, cts.Token);
+                var conFieldIds = new List<string>();
+                foreach (var item in contractInfo)
+                {
+                    var resp = await _proxy.FileUpload($"{host}{item}");
+                    if (resp.Code != 0)
+                        throw new Exception(resp.Message);
+                    conFieldIds.Add(resp.Data.fileId);
+                }
+
+                var fieldIDs = new List<string>();
+                foreach (var item in attInfo)
+                {
+                    var attresp = await _proxy.FileUpload($"{host}{item}");
+                    if (attresp.Code != 0)
+                        throw new Exception(attresp.Message);
+                    fieldIDs.Add(attresp.Data.fileId);
+                }
+
+                return await PollForSignUrlAsync(conFieldIds, fieldIDs, request.title, cts.Token);
             }
         }
 
@@ -39,7 +68,9 @@ namespace ESign.Services
             var resp = await _proxy.GetDownLoadFile(signFlowId);
             if (resp.Code == 0)
             {
-                foreach (var file in resp.Data.files)
+                var files = resp.Data.files;
+                files.AddRange(resp.Data.attachments);
+                foreach (var file in files)
                 {
                     var path = Path.Combine(_option.UploadFile, signFlowId);
                     if (!Directory.Exists(path))
@@ -81,21 +112,36 @@ namespace ESign.Services
         /// <param name="token"></param>
         /// <returns></returns>
         /// <exception cref="OperationCanceledException"></exception>
-        private async Task<SignUrl> PollForSignUrlAsync(string fileId, string title, CancellationToken token)
+
+        private async Task<SignUrl> PollForSignUrlAsync(List<string> conFieldIds, List<string> fileIds, string title, CancellationToken token)
         {
+            var statusMap = conFieldIds.Union(fileIds).ToDictionary(id => id, _ => 0);
+
             while (!token.IsCancellationRequested)
             {
-                var status = await _proxy.QueryUploadStatus(fileId);
-                if (status.Data.fileStatus == 2 || status.Data.fileStatus == 5)
+                foreach (var fileId in statusMap.Keys.ToList())
                 {
-                    var keywords = await _proxy.QueryKeyword(fileId);
-                    var created = await _proxy.CreateByFile(fileId, title, keywords.Data);
+                    var status = await _proxy.QueryUploadStatus(fileId);
+                    if (status.Data.fileStatus == 2 || status.Data.fileStatus == 5)
+                        statusMap[fileId] = status.Data.fileStatus;
+                }
+
+                if (statusMap.Values.All(v => v == 2 || v == 5))
+                {
+                    var fileIdList = new Dictionary<string, QueryKeyWord>();
+                    foreach (var item in statusMap.Keys)
+                    {
+                        var resp = await _proxy.QueryKeyword(item);
+                        fileIdList.Add(item, resp.Data);
+                    }
+
+                    var created = await _proxy.CreateByFile(conFieldIds, fileIds, title, fileIdList);
                     return (await _proxy.GetSignUrl(created.Data.signFlowId)).Data;
                 }
+
                 await Task.Delay(1000, token);
             }
             throw new OperationCanceledException();
         }
-
     }
 }

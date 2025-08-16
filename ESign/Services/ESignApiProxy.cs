@@ -1,4 +1,11 @@
-﻿using System;
+﻿using ESign.Constants;
+using ESign.Entity;
+using ESign.Entity.Request;
+using ESign.Entity.Result;
+using ESign.Helper;
+using ESign.Options;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,13 +14,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using ESign.Constants;
-using ESign.Entity;
-using ESign.Entity.Request;
-using ESign.Entity.Result;
-using ESign.Helper;
-using ESign.Options;
-using Newtonsoft.Json;
 
 namespace ESign.Services
 {
@@ -85,7 +85,7 @@ namespace ESign.Services
             var extension = fileName.StartsWith("http") ? Path.GetExtension(fileName) : fileName.Split('.')[1];
             var request = new FileUploadUrlRequest
             {
-                contentMd5 = FileHelper.GetFileContentMD5(filePath,out var length),
+                contentMd5 = FileHelper.GetFileContentMD5(filePath, out var length),
                 contentType = "application/octet-stream",
                 fileName = fileName.StartsWith("http") ? Path.GetFileName(fileName) : fileName,
                 convertToPDF = !extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase),
@@ -165,49 +165,41 @@ namespace ESign.Services
         /// <param name="signFlowTitle"></param>
         /// <param name="queryKeyWord"></param>
         /// <returns></returns>
-        public async Task<ESignApiResult<CreateByFile>> CreateByFile(string fileId, string signFlowTitle, QueryKeyWord queryKeyWord)
+        public async Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string, QueryKeyWord> queryKeyWord)
         {
-        
 
-            var signFields = queryKeyWord.keywordPositions
-                .SelectMany(k => k.positions)
-                .SelectMany(p => p.coordinates.Select(pos => new SignField
-                {
-                    fileId = fileId,
-                    normalSignFieldConfig = new NormalSignFieldConfig
-                    {
-                        signFieldPosition = new SignFieldPosition
+
+            var conFieldIdSet = new HashSet<string>(conFieldIds);
+
+            var signFields = queryKeyWord
+                .Where(x => conFieldIdSet.Contains(x.Key))
+                .SelectMany(item => item.Value.keywordPositions
+                    .SelectMany(k => k.positions)
+                    .SelectMany(p => p.coordinates
+                        .Select(pos => new SignField
                         {
-                            positionPage = p.pageNum.ToString(),
-                            positionX = Convert.ToInt32(pos.positionX),
-                            positionY = Convert.ToInt32(pos.positionY)
-                        }
-                    }
-                }))
+                            fileId = item.Key,
+                            normalSignFieldConfig = new NormalSignFieldConfig
+                            {
+                                signFieldPosition = new SignFieldPosition
+                                {
+                                    positionPage = p.pageNum.ToString(),
+                                    positionX = Convert.ToInt32(pos.positionX),
+                                    positionY = Convert.ToInt32(pos.positionY)
+                                }
+                            }
+                        })
+                    )
+                )
                 .ToList();
-
-            if (signFields.Count == 0) {
-                signFields.Add(new SignField()
-                {
-                    fileId = fileId,
-                    normalSignFieldConfig = new NormalSignFieldConfig
-                    {
-                        signFieldPosition = new SignFieldPosition
-                        {
-                            positionPage = "1",
-                            positionX = 1,
-                            positionY = 1
-                        }
-                    }
-                });
-            }
 
             var endpoint = ApiUris.Create_By_File;
 
             var request = new CreateByFileRequest
             {
-                docs = new List<Doc> { new Doc() { fileId = fileId } },
-                signFlowConfig = new SignFlowConfig { signFlowTitle = signFlowTitle, autoStart = true, autoFinish = true },
+                docs = conFieldIds.Select(x => new Doc() { fileId = x }).ToList(),
+                signFlowConfig = new SignFlowConfig { signFlowTitle = signFlowTitle, autoStart = true, autoFinish = true, noticeConfig = new NoticeConfig { noticeTypes = "1,2" }, redirectConfig = new RedirectConfig { redirectUrl = "https://www.esign.cn/" } },
+                attachments = fileId.Select(x => new Attachment() { fileId = x }).ToList(),
                 signFlowInitiator = null,
                 signers = new List<Signer>
                 {
@@ -217,15 +209,27 @@ namespace ESign.Services
                         orgSignerInfo = new OrgSignerInfo
                         {
                             orgName = _option.ESignOrgName,
-                            transactorInfo = new TransactorInfo { psnAccount = _option.PsnAccount }
+                            transactorInfo = new TransactorInfo { psnAccount = _option.PsnAccount,psnInfo=new Entity.Request.PsnInfo {  psnName=""} }
                         },
                         signConfig = new SignerSignConfig { signOrder = 1 },
+                        signFields = signFields
+                    },
+                     new Signer()
+                    {
+                        signerType = SignerType.Org,
+                        orgSignerInfo = new OrgSignerInfo
+                        {
+                            orgName = "esigntest浙江苏泊尔股份有限公司PABE",
+                            transactorInfo = new TransactorInfo { psnAccount = _option.PsnAccount,psnInfo=new Entity.Request.PsnInfo {  psnName=""} }
+                        },
+                        signConfig = new SignerSignConfig { signOrder = 2 },
                         signFields = signFields
                     }
                 }
             };
 
             var jsonParam = JsonConvert.SerializeObject(request);
+
             var headers = HttpHelper.SignAndBuildSignAndJsonHeader(_option.AppId, _option.AppSecret, jsonParam, HttpType.POST, endpoint);
 
             var response = await ExecuteHttpRequestAsync($"{_option.ESignUrl}{endpoint}", HttpType.POST, jsonParam, headers);
@@ -245,11 +249,16 @@ namespace ESign.Services
 
             var request = new SignUrlRequest()
             {
-                signFlowId = signFlowId,
-                Operator = null
+                clientType = "ALL",
+                needLogin = false,
+                redirectConfig = new SignUrlRedirectConfig { redirectDelayTime = 10, redirectUrl = "https://open.esign.cn/doc/opendoc/pdf-sign3/pvfkwd" },
+                @operator = new Operator() { psnAccount = "15088664158" },
+                urlType = 2
             };
 
+
             var jsonParam = JsonConvert.SerializeObject(request);
+
             var headers = HttpHelper.SignAndBuildSignAndJsonHeader(_option.AppId, _option.AppSecret, jsonParam, HttpType.POST, endpoint);
 
             var response = await ExecuteHttpRequestAsync(apiUrl, HttpType.POST, jsonParam, headers);
@@ -304,8 +313,6 @@ namespace ESign.Services
             {
                 using (var httpClient = new HttpClient())
                 {
-
-
                     if (filePath.StartsWith("http"))
                     {
                         fileStream = new MemoryStream(FileHelper.GetRemoteFileBinary(filePath));
@@ -336,9 +343,9 @@ namespace ESign.Services
                     }
                 }
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
-                return HandleHttpException(ex);
+                return null;
             }
             finally
             {
@@ -402,23 +409,6 @@ namespace ESign.Services
                 result.IsNetworkSuccess = true;
                 result.NetworkMsg = "网络请求成功";
             }
-            catch (WebException webEx)
-            {
-                result.IsNetworkSuccess = false;
-                result.NetworkMsg = webEx.Message;
-
-                if (webEx.Status == WebExceptionStatus.ProtocolError && webEx.Response != null)
-                {
-                    webResp = (HttpWebResponse)webEx.Response;
-                    result.HttpStatusCode = (int)webResp.StatusCode;
-                    result.HttpStatusCodeMsg = webResp.StatusCode.ToString();
-
-                    using (var reader = new StreamReader(webResp.GetResponseStream(), Encoding.UTF8))
-                    {
-                        result.RespData = await reader.ReadToEndAsync().ConfigureAwait(false);
-                    }
-                }
-            }
             catch (Exception ex)
             {
                 result.IsNetworkSuccess = false;
@@ -449,4 +439,5 @@ namespace ESign.Services
 
         #endregion
     }
+
 }

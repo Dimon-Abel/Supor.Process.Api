@@ -27,6 +27,7 @@ namespace ESign.Entity.Request
         public long? signFlowExpireTime { get; set; }
         public bool autoStart { get; set; } = true;
         public bool autoFinish { get; set; } = false;
+        public NoticeConfig noticeConfig { get; set; }
         public bool identityVerify { get; set; }
         public SignConfig signConfig { get; set; } = new SignConfig();
         public string notifyUrl { get; set; }

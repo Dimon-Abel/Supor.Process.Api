@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using ESign.Entity.Request;
 using ESign.Entity.Result;
 
 namespace ESign.Services.Interfaces
 {
     public interface IESignService
     {
-        Task<SignUrl> Send(string fileName, string title = "签署文件");
+        Task<SignUrl> Send(SendRequest request);
         Task Callback(string signFlowId);
     }
 }

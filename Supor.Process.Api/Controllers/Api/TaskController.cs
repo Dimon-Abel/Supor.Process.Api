@@ -1,4 +1,5 @@
 ﻿using ESign.Entity;
+using ESign.Entity.Request;
 using ESign.Entity.Result;
 using ESign.Services;
 using ESign.Services.Interfaces;
@@ -62,9 +63,9 @@ namespace Supor.Process.Api.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("api/Task/Test")]
-        public async Task<SignUrl> Test(string fileName)
+        public async Task<SignUrl> Test(SendRequest  request)
         {
-            var result = await _eSignService.Send(fileName);
+            var result = await _eSignService.Send(request);
             return await Task.FromResult(result);
         }
 

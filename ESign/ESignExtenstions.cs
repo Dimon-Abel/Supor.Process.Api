@@ -29,6 +29,8 @@ namespace ESign
             options.UploadFile = ConfigurationManager.AppSettings[nameof(options.UploadFile)];
             options.Keyword = ConfigurationManager.AppSettings[nameof(options.Keyword)];
             options.PsnAccount = ConfigurationManager.AppSettings[nameof(options.PsnAccount)];
+            options.UploadUrl = ConfigurationManager.AppSettings[nameof(options.UploadUrl)];
+
 
             builder.RegisterInstance(options).As<ESignOption>().SingleInstance();
 
