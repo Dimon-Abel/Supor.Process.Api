@@ -1,0 +1,15 @@
+D:\BPM生产代码\后端\ESign\obj\Debug\ESign.csproj.AssemblyReference.cache
+D:\BPM生产代码\后端\ESign\obj\Debug\ESign.csproj.CoreCompileInputs.cache
+D:\BPM生产代码\后端\ESign\bin\Debug\ESign.dll
+D:\BPM生产代码\后端\ESign\bin\Debug\ESign.pdb
+D:\BPM生产代码\后端\ESign\bin\Debug\Autofac.dll
+D:\BPM生产代码\后端\ESign\bin\Debug\Dapper.dll
+D:\BPM生产代码\后端\ESign\bin\Debug\Newtonsoft.Json.dll
+D:\BPM生产代码\后端\ESign\bin\Debug\Autofac.pdb
+D:\BPM生产代码\后端\ESign\bin\Debug\Autofac.xml
+D:\BPM生产代码\后端\ESign\bin\Debug\Dapper.xml
+D:\BPM生产代码\后端\ESign\bin\Debug\Newtonsoft.Json.xml
+D:\BPM生产代码\后端\ESign\obj\Debug\ESign.csproj.CopyComplete
+D:\BPM生产代码\后端\ESign\obj\Debug\ESign.dll
+D:\BPM生产代码\后端\ESign\obj\Debug\ESign.pdb
+D:\BPM生产代码\后端\ESign\bin\Debug\KFLibrary.dll

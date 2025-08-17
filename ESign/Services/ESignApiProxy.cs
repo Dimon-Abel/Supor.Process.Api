@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,10 +32,29 @@ namespace ESign.Services
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<ESignApiResult<OrgIdentity>> GetOrganizationIdentityInfo()
+        public async Task<ESignApiResult<OrgIdentity>> GetOrganizationIdentityInfo(string orgId, string orgName, string orgIDCardNum, string orgIDCardType)
         {
             const string endpoint = "/v3/organizations/identity-info";
-            var query = $"?orgName={_option.ESignOrgName}";
+            var queryParams = new List<string>();
+
+            // 只有非空且非空白的值才添加
+            if (!string.IsNullOrWhiteSpace(orgId))
+                queryParams.Add($"orgId={orgId}");
+
+            if (!string.IsNullOrWhiteSpace(orgName))
+                queryParams.Add($"orgName={orgName}");
+
+            // 注意：orgIDCardNum 和 orgIDCardType 要同时存在才添加
+            if (!string.IsNullOrWhiteSpace(orgIDCardNum) &&
+                !string.IsNullOrWhiteSpace(orgIDCardType))
+            {
+                queryParams.Add($"orgIDCardNum={orgIDCardNum}");
+                queryParams.Add($"orgIDCardType={orgIDCardType}");
+            }
+
+            // 拼接：有参数则以 ? 开头，否则返回空字符串
+           var query = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
+
             var apiUrl = $"{_option.ESignUrl}{endpoint}{query}";
 
             try
@@ -57,10 +77,30 @@ namespace ESign.Services
         /// <param name="account"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<ESignApiResult<PersonIdentity>> GetPersonIdentityInfo(string account)
+        public async Task<ESignApiResult<PersonIdentity>> GetPersonIdentityInfo(string psnId, string psnAccount, string psnIDCardNum, string psnIDCardType)
         {
             const string endpoint = "/v3/persons/identity-info";
-            var query = $"?psnAccount={account}";
+
+            var queryParams = new List<string>();
+            var query = "?";
+            if (!string.IsNullOrWhiteSpace(psnId))
+                queryParams.Add($"psnId={psnId}");
+
+            if (!string.IsNullOrWhiteSpace(psnAccount))
+                queryParams.Add($"psnAccount={psnAccount}");
+
+            if (!string.IsNullOrWhiteSpace(psnIDCardNum) &&
+                !string.IsNullOrWhiteSpace(psnIDCardType))
+            {
+                queryParams.Add($"psnIDCardNum={psnIDCardNum}");
+                queryParams.Add($"psnIDCardType={psnIDCardType}");
+            }
+
+            if (queryParams.Count > 0)
+            {
+                query += "&" + string.Join("&", queryParams);
+            }
+
             var apiUrl = $"{_option.ESignUrl}{endpoint}{query}";
 
             try
@@ -219,10 +259,10 @@ namespace ESign.Services
         /// <param name="signFlowTitle"></param>
         /// <param name="queryKeyWord"></param>
         /// <returns></returns>
-        public async Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string, QueryKeyWord> queryKeyWord)
+        public async Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string, QueryKeyWord> queryKeyWord, List<SignInfo> singnInfo)
         {
             var conFieldIdSet = new HashSet<string>(conFieldIds);
-
+            //构建签署区信息集合
             var signFields = queryKeyWord
                 .Where(x => conFieldIdSet.Contains(x.Key))
                 .SelectMany(item => item.Value.keywordPositions
@@ -244,40 +284,33 @@ namespace ESign.Services
                     )
                 )
                 .ToList();
+            //构建签署方信息集合
+            var signerList = singnInfo?
+                .Where(s => s != null)
+                .Select(s => new Signer
+                {
+                    signerType = SignerType.Org,
+                    orgSignerInfo = new OrgSignerInfo
+                    {
+                        orgName = s.OrgName,
+                        orgInfo = s.OrgInfo,
+                        transactorInfo = s.TransactorInfo
+                    },
+                    signConfig = s.SignConfig,
+                    signFields = signFields
+                })
+                .ToList()
+                ?? new List<Signer>();
 
             var endpoint = ApiUris.Create_By_File;
 
             var request = new CreateByFileRequest
             {
                 docs = conFieldIds.Select(x => new Doc() { fileId = x }).ToList(),
-                signFlowConfig = new SignFlowConfig { signFlowTitle = signFlowTitle, autoStart = true, autoFinish = true, noticeConfig = new NoticeConfig { noticeTypes = "1,2" }, redirectConfig = new RedirectConfig { redirectUrl = "https://www.esign.cn/" } },
+                signFlowConfig = new SignFlowConfig { signFlowTitle = signFlowTitle, autoStart =_option. AutoStart, autoFinish = _option.AutoFinish, noticeConfig = new NoticeConfig { noticeTypes = _option.NoticeTypes }, redirectConfig = new RedirectConfig { redirectUrl = _option.RedirectUrl } },
                 attachments = fileId.Select(x => new Attachment() { fileId = x }).ToList(),
                 signFlowInitiator = null,
-                signers = new List<Signer>
-                {
-                    new Signer()
-                    {
-                        signerType = SignerType.Org,
-                        orgSignerInfo = new OrgSignerInfo
-                        {
-                            orgName = _option.ESignOrgName,
-                            transactorInfo = new TransactorInfo { psnAccount = _option.PsnAccount,psnInfo=new Entity.Request.PsnInfo {  psnName=""} }
-                        },
-                        signConfig = new SignerSignConfig { signOrder = 1 },
-                        signFields = signFields
-                    },
-                     new Signer()
-                    {
-                        signerType = SignerType.Org,
-                        orgSignerInfo = new OrgSignerInfo
-                        {
-                            orgName = "esigntest浙江苏泊尔股份有限公司PABE",
-                            transactorInfo = new TransactorInfo { psnAccount = _option.PsnAccount,psnInfo=new Entity.Request.PsnInfo {  psnName=""} }
-                        },
-                        signConfig = new SignerSignConfig { signOrder = 2 },
-                        signFields = signFields
-                    }
-                }
+                signers = signerList
             };
 
             var jsonParam = JsonConvert.SerializeObject(request);
@@ -294,18 +327,18 @@ namespace ESign.Services
         /// </summary>
         /// <param name="signFlowId"></param>
         /// <returns></returns>
-        public async Task<ESignApiResult<SignUrl>> GetSignUrl(string signFlowId)
+        public async Task<ESignApiResult<SignUrl>> GetSignUrl(string signFlowId,string psnId,string psnAccount)
         {
             string endpoint = $"/v3/sign-flow/{signFlowId}/sign-url";
             var apiUrl = $"{_option.ESignUrl}{endpoint}";
 
             var request = new SignUrlRequest()
             {
-                clientType = "ALL",
-                needLogin = false,
-                redirectConfig = new SignUrlRedirectConfig { redirectDelayTime = 10, redirectUrl = "https://open.esign.cn/doc/opendoc/pdf-sign3/pvfkwd" },
-                @operator = new Operator() { psnAccount = "15088664158" },
-                urlType = 2
+                clientType = _option.ClientType,
+                needLogin = _option.NeedLogin,
+                redirectConfig = new SignUrlRedirectConfig { redirectDelayTime = _option.RedirectDelayTime, redirectUrl = _option.SignRedirectUrl },
+                @operator = new Operator() { psnId= psnId, psnAccount = psnAccount },
+                urlType = _option.UrlType
             };
 
 
@@ -335,26 +368,6 @@ namespace ESign.Services
             return response.GetResult<ESignApiResult<FileDownLoad>>();
         }
 
-        #region private methods
-
-        /// <summary>
-        /// 获取上传文件路径
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        private async Task<ESignApiResult<FileUploadUrl>> GetFileUploadUrlAsync(FileUploadUrlRequest request)
-        {
-            var jsonParam = JsonConvert.SerializeObject(request);
-            var headers = HttpHelper.SignAndBuildSignAndJsonHeader(_option.AppId, _option.AppSecret, jsonParam, HttpType.POST, ApiUris.File_Upload_Url);
-
-            var response = await ExecuteHttpRequestAsync(_option.ESignUrl + ApiUris.File_Upload_Url, HttpType.POST, jsonParam, headers);
-
-            return response.HttpStatusCode == 200
-                ? JsonConvert.DeserializeObject<ESignApiResult<FileUploadUrl>>(response.RespData.ToString())
-                : throw new Exception(response.HttpStatusCodeMsg);
-        }
-
         /// <summary>
         /// 上传文件
         /// </summary>
@@ -363,7 +376,7 @@ namespace ESign.Services
         /// <param name="headers"></param>
         /// <param name="contentType"></param>
         /// <returns></returns>
-        private static async Task<HttpRespResult> UploadFileAsync(string url, byte[] fileByte, Dictionary<string, string> headers, string contentType = "application/octet-stream")
+        public async Task<HttpRespResult> UploadFileAsync(string url, byte[] fileByte, Dictionary<string, string> headers, string contentType = "application/octet-stream")
         {
             Stream fileStream = new MemoryStream(fileByte);
 
@@ -398,6 +411,27 @@ namespace ESign.Services
             }
         }
 
+
+        #region private methods
+
+        /// <summary>
+        /// 获取上传文件路径
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private async Task<ESignApiResult<FileUploadUrl>> GetFileUploadUrlAsync(FileUploadUrlRequest request)
+        {
+            var jsonParam = JsonConvert.SerializeObject(request);
+            var headers = HttpHelper.SignAndBuildSignAndJsonHeader(_option.AppId, _option.AppSecret, jsonParam, HttpType.POST, ApiUris.File_Upload_Url);
+
+            var response = await ExecuteHttpRequestAsync(_option.ESignUrl + ApiUris.File_Upload_Url, HttpType.POST, jsonParam, headers);
+
+            return response.HttpStatusCode == 200
+                ? JsonConvert.DeserializeObject<ESignApiResult<FileUploadUrl>>(response.RespData.ToString())
+                : throw new Exception(response.HttpStatusCodeMsg);
+        }
+
         /// <summary>
         /// 上传文件
         /// </summary>
@@ -406,7 +440,7 @@ namespace ESign.Services
         /// <param name="headers"></param>
         /// <param name="contentType"></param>
         /// <returns></returns>
-        private static async Task<HttpRespResult> UploadFileAsync(string url, string filePath, Dictionary<string, string> headers, string contentType = "application/octet-stream")
+        private async Task<HttpRespResult> UploadFileAsync(string url, string filePath, Dictionary<string, string> headers, string contentType = "application/octet-stream")
         {
             Stream fileStream = null;
 

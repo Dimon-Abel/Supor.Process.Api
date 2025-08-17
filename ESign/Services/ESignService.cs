@@ -9,6 +9,7 @@ using ESign.Entity.Request;
 using ESign.Entity.Result;
 using ESign.Options;
 using ESign.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace ESign.Services
 {
@@ -29,12 +30,14 @@ namespace ESign.Services
 
             using (var cts = new CancellationTokenSource())
             {
-                var identityInfo = await _proxy.GetOrganizationIdentityInfo();
+                var identityInfo = await _proxy.GetOrganizationIdentityInfo(request.OrgId, request.OrgName, request.OrgIDCardNum, request.OrgIDCardType);
+
                 if (identityInfo?.Code != 0)
                     throw new Exception("机构授权验证失败");
 
                 var host = _option.UploadUrl;
 
+                //循环上传需盖章文件
                 var conFieldIds = new List<string>();
                 foreach (var item in request.Docs)
                 {
@@ -44,6 +47,7 @@ namespace ESign.Services
                     conFieldIds.Add(resp.Data.fileId);
                 }
 
+                //循环上传合同附件
                 var fieldIDs = new List<string>();
                 foreach (var item in request.Attachments)
                 {
@@ -53,11 +57,11 @@ namespace ESign.Services
                     fieldIDs.Add(attresp.Data.fileId);
                 }
 
-                return await PollForSignUrlAsync(conFieldIds, fieldIDs, request.title, cts.Token);
+                return await PollForSignUrlAsync(conFieldIds, fieldIDs, request, cts.Token);
             }
         }
 
-        public async Task Callback(string signFlowId)
+        public async Task Callback(string signFlowId, string fileSavePath)
         {
             var resp = await _proxy.GetDownLoadFile(signFlowId);
             if (resp.Code == 0)
@@ -66,14 +70,21 @@ namespace ESign.Services
                 files.AddRange(resp.Data.attachments);
                 foreach (var file in files)
                 {
-                    var path = Path.Combine(_option.UploadFile, signFlowId);
-                    if (!Directory.Exists(path))
+                    if (!string.IsNullOrWhiteSpace(fileSavePath))
                     {
-                        Directory.CreateDirectory(path);
+                        await DownloadFileAsync(file.downloadUrl, fileSavePath);
                     }
+                    else
+                    {
+                        var path = Path.Combine(_option.UploadFile, signFlowId);
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
 
-                    var localPath = Path.Combine(path, file.fileName);
-                    await DownloadFileAsync(file.downloadUrl, localPath);
+                        var localPath = Path.Combine(path, file.fileName);
+                        await DownloadFileAsync(file.downloadUrl, localPath);
+                    }
                 }
             }
             else
@@ -82,16 +93,25 @@ namespace ESign.Services
             }
         }
 
-        private static async Task DownloadFileAsync(string url, string localPath)
+        private async Task DownloadFileAsync(string url, string localPath = "")
         {
             using (var client = new HttpClient())
             {
                 using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
                 {
                     response.EnsureSuccessStatusCode();
-                    using (var fileStream = new FileStream(localPath, FileMode.Create))
+                    if (localPath.StartsWith("http"))
                     {
-                        await response.Content.CopyToAsync(fileStream);
+                        // 将文件流 推送给第三方
+                        var bytes = await response.Content.ReadAsByteArrayAsync();
+                        await _proxy.UploadFileAsync(localPath, bytes, null);
+                    }
+                    else
+                    {
+                        using (var fileStream = new FileStream(localPath, FileMode.Create))
+                        {
+                            await response.Content.CopyToAsync(fileStream);
+                        }
                     }
                 }
             }
@@ -107,10 +127,11 @@ namespace ESign.Services
         /// <returns></returns>
         /// <exception cref="OperationCanceledException"></exception>
 
-        private async Task<SignUrl> PollForSignUrlAsync(List<string> conFieldIds, List<string> fileIds, string title, CancellationToken token)
+        private async Task<SignUrl> PollForSignUrlAsync(List<string> conFieldIds, List<string> fileIds, SendRequest request, CancellationToken token)
         {
             var statusMap = conFieldIds.Union(fileIds).ToDictionary(id => id, _ => 0);
             int count = 0;
+            //循环验证文件状态是否都为2或5
             while (!token.IsCancellationRequested)
             {
                 foreach (var fileId in statusMap.Keys.ToList())
@@ -129,8 +150,8 @@ namespace ESign.Services
                         fileIdList.Add(item, resp.Data);
                     }
 
-                    var created = await _proxy.CreateByFile(conFieldIds, fileIds, title, fileIdList);
-                    return (await _proxy.GetSignUrl(created.Data.signFlowId)).Data;
+                    var created = await _proxy.CreateByFile(conFieldIds, fileIds, request.Title, fileIdList, request.SignInfo);
+                    return (await _proxy.GetSignUrl(created.Data.signFlowId, request.PsnId, request.PsnAccount)).Data;
                 }
 
                 count++;

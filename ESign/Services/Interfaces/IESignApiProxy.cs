@@ -12,7 +12,7 @@ namespace ESign.Services
         /// 获取机构认证信息
         /// </summary>
         /// <returns></returns>
-        Task<ESignApiResult<OrgIdentity>> GetOrganizationIdentityInfo();
+        Task<ESignApiResult<OrgIdentity>> GetOrganizationIdentityInfo(string orgId, string orgName, string orgIDCardNum, string orgIDCardType);
         /// <summary>
         /// 获取上传文件路径
         /// </summary>
@@ -49,7 +49,7 @@ namespace ESign.Services
         /// <param name="identityInfo"></param>
         /// <param name="queryKeyWord"></param>
         /// <returns></returns>
-        Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string,QueryKeyWord>  queryKeyWord);
+        Task<ESignApiResult<CreateByFile>> CreateByFile(List<string> conFieldIds, List<string> fileId, string signFlowTitle, Dictionary<string, QueryKeyWord> queryKeyWord, List<SignInfo> singnInfo);
 
         /// <summary>
         /// 获取下载签署文件
@@ -63,6 +63,16 @@ namespace ESign.Services
         /// </summary>
         /// <param name="signFlowId"></param>
         /// <returns></returns>
-        Task<ESignApiResult<SignUrl>> GetSignUrl(string signFlowId);
+        Task<ESignApiResult<SignUrl>> GetSignUrl(string signFlowId, string psnId, string psnAccount);
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="url">文件传输地址</param>
+        /// <param name="fileByte">文件流</param>
+        /// <param name="headers">http header</param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        Task<HttpRespResult> UploadFileAsync(string url, byte[] fileByte, Dictionary<string, string> headers, string contentType = "application/octet-stream");
     }
 }

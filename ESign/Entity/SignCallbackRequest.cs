@@ -20,6 +20,11 @@
         /// 签署流程Id
         /// </summary>
         public string signFlowId { get; set; }
+
+        /// <summary>
+        /// 文件存储路径
+        /// </summary>
+        public string fileSavePath { get; set; }
     }
 
     public enum SignFlowStatus
